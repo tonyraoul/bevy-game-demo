@@ -1,7 +1,7 @@
 use bevy::{prelude::*, pbr::StandardMaterial};
 use bevy_rapier3d::prelude::*;
 
-use crate::states::GameState;
+use crate::{states::GameState, systems::*};
 
 pub struct GamePlugin;
 
@@ -10,7 +10,8 @@ impl Plugin for GamePlugin {
         app
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
-            .add_systems(OnEnter(GameState::InGame), setup_game)
+            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player))
+            .add_systems(Update, player_movement.run_if(in_state(GameState::InGame)))
             .add_systems(OnExit(GameState::InGame), cleanup_game);
     }
 }
