@@ -56,8 +56,8 @@ fn spawn_enemy(
         Collider::cuboid(0.5, 0.5, 0.75),
         LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
         Damping {
-            linear_damping: 5.0,
-            angular_damping: 5.0,
+            linear_damping: 0.5,
+            angular_damping: 1.0,
         },
         CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),  // Enemy can collide with environment and other bears
     ));
