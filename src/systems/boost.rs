@@ -8,11 +8,11 @@ const BOOST_FORCE: f32 = 15.0;
 const BOOST_THRESHOLD: f32 = 0.95;
 
 pub fn handle_boost(
-    mut query: Query<(&mut EnergyBoost, &mut Velocity)>,
+    mut query: Query<(&mut EnergyBoost, &Player)>,
     keyboard: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    for (mut boost, mut velocity) in query.iter_mut() {
+    for (mut boost, _) in query.iter_mut() {
         // Handle cooldown
         if boost.cooldown_timer.tick(time.delta()).finished() {
             boost.is_boosting = false;
@@ -25,18 +25,18 @@ pub fn handle_boost(
 
         // Apply boost for player
         if keyboard.just_pressed(KeyCode::Space) && boost.energy > 0.1 && !boost.is_boosting {
-            apply_boost(&mut boost, &mut velocity);
+            apply_boost(&mut boost);
         }
     }
 }
 
 pub fn handle_ai_boost(
-    mut query: Query<(&mut EnergyBoost, &mut Velocity), With<Enemy>>,
+    mut query: Query<(&mut EnergyBoost, &Enemy)>,
     time: Res<Time>,
 ) {
     let mut rng = rand::thread_rng();
     
-    for (mut boost, mut velocity) in query.iter_mut() {
+    for (mut boost, _) in query.iter_mut() {
         // Handle cooldown and recharge same as player
         if boost.cooldown_timer.tick(time.delta()).finished() {
             boost.is_boosting = false;
@@ -48,14 +48,12 @@ pub fn handle_ai_boost(
 
         // Random chance to boost if energy is high enough
         if boost.energy > BOOST_THRESHOLD && !boost.is_boosting && rng.gen_bool(0.1) {
-            apply_boost(&mut boost, &mut velocity);
+            apply_boost(&mut boost);
         }
     }
 }
 
-fn apply_boost(boost: &mut EnergyBoost, velocity: &mut Velocity) {
-    let boost_direction = velocity.linvel.normalize_or_zero();
-    velocity.linvel += boost_direction * BOOST_FORCE;
+fn apply_boost(boost: &mut EnergyBoost) {
     boost.energy = 0.0;
     boost.is_boosting = true;
     boost.cooldown_timer.reset();

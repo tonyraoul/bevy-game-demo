@@ -52,7 +52,7 @@ fn spawn_enemy(
 }
 
 pub fn enemy_behavior(
-    mut enemy_query: Query<(&mut Enemy, &Transform, &mut Velocity)>,
+    mut enemy_query: Query<(&mut Enemy, &Transform, &mut Velocity, &EnergyBoost)>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     time: Res<Time>,
 ) {
@@ -63,7 +63,7 @@ pub fn enemy_behavior(
         return;
     };
 
-    for (mut enemy, transform, mut velocity) in enemy_query.iter_mut() {
+    for (mut enemy, transform, mut velocity, boost) in enemy_query.iter_mut() {
         // Update state timer
         enemy.state_timer.tick(time.delta());
 
@@ -100,15 +100,13 @@ pub fn enemy_behavior(
         
         // Only move if not too close to target
         if transform.translation.distance(target_pos) > 2.0 {
-            // Calculate target rotation
-            let target_rotation = if direction != Vec3::ZERO {
-                Quat::from_rotation_y(-direction.z.atan2(direction.x))
+            // Apply movement with boost if active
+            let speed = if boost.is_boosting {
+                enemy.movement_speed * 2.5
             } else {
-                transform.rotation
+                enemy.movement_speed
             };
-
-            // Apply movement
-            velocity.linvel = direction * enemy.movement_speed;
+            velocity.linvel = direction * speed;
         } else {
             velocity.linvel = Vec3::ZERO;
         }

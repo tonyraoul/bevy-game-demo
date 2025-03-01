@@ -18,11 +18,11 @@ impl Default for Score {
 }
 
 pub fn player_movement(
-    mut player_query: Query<(&Player, &mut Transform, &mut Velocity)>,
+    mut player_query: Query<(&Player, &mut Transform, &mut Velocity, &EnergyBoost)>,
     keyboard: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    for (player, mut transform, mut velocity) in player_query.iter_mut() {
+    for (player, mut transform, mut velocity, boost) in player_query.iter_mut() {
         let mut movement = Vec3::ZERO;
 
         // Get keyboard input
@@ -57,8 +57,13 @@ pub fn player_movement(
             );
         }
 
-        // Apply movement
-        velocity.linvel = movement * player.movement_speed;
+        // Apply movement with boost if active
+        let speed = if boost.is_boosting {
+            player.movement_speed * 2.5
+        } else {
+            player.movement_speed
+        };
+        velocity.linvel = movement * speed;
     }
 }
 
