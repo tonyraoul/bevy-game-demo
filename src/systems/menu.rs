@@ -3,9 +3,13 @@ use bevy::{app::AppExit, prelude::*};
 use crate::{
     components::{MainMenu, MenuButton, MenuButtonAction},
     styles::*,
+    states::GameState,
 };
 
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Camera
+    commands.spawn(Camera2dBundle::default());
+
     let main_menu = commands
         .spawn((
             NodeBundle {
@@ -81,6 +85,7 @@ pub fn handle_menu_buttons(
         (Changed<Interaction>, With<Button>),
     >,
     mut app_exit_events: EventWriter<AppExit>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, mut color, menu_button) in button_query.iter_mut() {
         match *interaction {
@@ -88,8 +93,8 @@ pub fn handle_menu_buttons(
                 *color = PRESSED_BUTTON_COLOR.into();
                 match menu_button.action {
                     MenuButtonAction::Quit => app_exit_events.send(AppExit),
-                    MenuButtonAction::Play => { /* TODO: Implement game state change */ }
-                    MenuButtonAction::Settings => { /* TODO: Implement settings menu */ }
+                    MenuButtonAction::Play => next_state.set(GameState::InGame),
+                    MenuButtonAction::Settings => next_state.set(GameState::Settings),
                 }
             }
             Interaction::Hovered => {
@@ -99,5 +104,19 @@ pub fn handle_menu_buttons(
                 *color = NORMAL_BUTTON_COLOR.into();
             }
         }
+    }
+}
+
+pub fn cleanup_menu(
+    mut commands: Commands,
+    menu_query: Query<Entity, With<MainMenu>>,
+    camera_query: Query<Entity, With<Camera>>,
+) {
+    for entity in menu_query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+
+    for entity in camera_query.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 } 

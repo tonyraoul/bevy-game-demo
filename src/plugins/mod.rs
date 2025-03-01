@@ -1,5 +1,7 @@
-mod cube_demo;
 mod menu;
+mod game;
+mod settings;
 
-pub use cube_demo::*;
-pub use menu::*; 
+pub use menu::*;
+pub use game::*;
+pub use settings::*; 

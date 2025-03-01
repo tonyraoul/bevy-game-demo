@@ -2,15 +2,18 @@ mod components;
 mod systems;
 mod plugins;
 mod styles;
+mod states;
 
 use bevy::{
     prelude::*,
     window::WindowMode,
 };
-use plugins::{CubeDemoPlugin, MenuPlugin};
+use plugins::{MenuPlugin, GamePlugin, SettingsPlugin};
+use states::GameState;
 
 fn main() {
     App::new()
+        .add_state::<GameState>()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Demo - Spinning Cube".into(),
@@ -19,6 +22,6 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins((CubeDemoPlugin, MenuPlugin))
+        .add_plugins((MenuPlugin, GamePlugin, SettingsPlugin))
         .run();
 } 
