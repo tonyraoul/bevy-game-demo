@@ -17,6 +17,10 @@ use crate::systems::{
     spawn_game_over_screen,
     handle_game_over_input,
     cleanup_game_over,
+    toggle_pause,
+    spawn_pause_menu,
+    handle_pause_input,
+    cleanup_pause_menu,
 };
 use crate::systems::score::update_score_text;
 use crate::plugins::settings::handle_settings;
@@ -31,7 +35,6 @@ impl Plugin for GamePlugin {
             .add_plugins(RapierDebugRenderPlugin::default())
             .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud, spawn_enemies))
             .add_systems(Update, (
-                handle_settings,
                 handle_boost,
                 handle_ai_boost,
                 update_boost_indicator,
@@ -40,8 +43,12 @@ impl Plugin for GamePlugin {
                 check_fall,
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
+                toggle_pause,
             ).run_if(in_state(GameState::InGame)))
             .add_systems(OnExit(GameState::InGame), cleanup_game)
+            .add_systems(OnEnter(GameState::Paused), spawn_pause_menu)
+            .add_systems(Update, handle_pause_input.run_if(in_state(GameState::Paused)))
+            .add_systems(OnExit(GameState::Paused), cleanup_pause_menu)
             .add_systems(OnEnter(GameState::GameOver), spawn_game_over_screen)
             .add_systems(Update, handle_game_over_input.run_if(in_state(GameState::GameOver)))
             .add_systems(OnExit(GameState::GameOver), cleanup_game_over);

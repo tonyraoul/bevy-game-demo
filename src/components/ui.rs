@@ -25,3 +25,18 @@ pub enum GameOverButtonAction {
     Restart,
     MainMenu,
 }
+
+#[derive(Component)]
+pub struct PauseMenu;
+
+#[derive(Component)]
+pub struct PauseButton {
+    pub action: PauseButtonAction,
+}
+
+#[derive(Clone)]
+pub enum PauseButtonAction {
+    Resume,
+    MainMenu,
+    Quit,
+}
