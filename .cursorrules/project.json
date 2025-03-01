@@ -1,0 +1,45 @@
+{
+    "project": {
+        "name": "bevy-demo",
+        "type": "game",
+        "builds": {
+            "development": {
+                "features": ["dynamic_linking", "debug"],
+                "optimizations": "debug"
+            },
+            "release": {
+                "features": ["release"],
+                "optimizations": "release",
+                "lto": "thin"
+            }
+        },
+        "assets": {
+            "directories": [
+                "assets/models",
+                "assets/textures",
+                "assets/audio",
+                "assets/shaders"
+            ],
+            "formats": {
+                "models": [".gltf", ".glb"],
+                "textures": [".png", ".jpg", ".ktx2"],
+                "audio": [".ogg", ".wav"],
+                "shaders": [".wgsl"]
+            }
+        },
+        "documentation": {
+            "requireReadme": true,
+            "requireLicense": true,
+            "requireChangelog": true,
+            "requireComments": true
+        },
+        "testing": {
+            "requireUnitTests": true,
+            "requireIntegrationTests": true,
+            "coverage": {
+                "minimum": 70,
+                "excludePaths": ["tests/", "examples/"]
+            }
+        }
+    }
+} 

@@ -1,0 +1,54 @@
+{
+    "bevy": {
+        "conventions": {
+            "entities": {
+                "requireCleanup": true,
+                "requireStrongIds": true,
+                "namingPattern": "PascalCase"
+            },
+            "systems": {
+                "requireBoundedUpdate": true,
+                "requireStateCoLocation": true,
+                "namingPattern": "snake_case"
+            },
+            "events": {
+                "preferEventsOverStates": true,
+                "requireExplicitOrdering": true,
+                "requireExplicitHandling": true,
+                "namingPattern": "PascalCase"
+            },
+            "components": {
+                "deriveMandatory": ["Component", "Debug"],
+                "deriveRecommended": ["Clone", "PartialEq"],
+                "namingPattern": "PascalCase"
+            }
+        },
+        "performance": {
+            "enableDynamicLinking": true,
+            "enableFastCompiles": true,
+            "enableParallelization": true
+        },
+        "structure": {
+            "requirePrelude": true,
+            "requirePluginModules": true,
+            "directories": [
+                "src/components",
+                "src/systems",
+                "src/plugins",
+                "src/resources",
+                "src/events"
+            ]
+        },
+        "lints": {
+            "clippy": {
+                "pedantic": true,
+                "nursery": true,
+                "bevy": {
+                    "systemParamCasing": true,
+                    "unnecessaryQuery": true,
+                    "multipleCommands": true
+                }
+            }
+        }
+    }
+} 

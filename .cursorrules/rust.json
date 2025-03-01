@@ -1,0 +1,58 @@
+{
+    "formatter": "rustfmt",
+    "language": "rust",
+    "tabWidth": 4,
+    "useTabs": false,
+    "lineEnding": "lf",
+    "bracketSpacing": true,
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "semi": true,
+    "rustfmt": {
+        "edition": "2021",
+        "max_width": 100,
+        "tab_spaces": 4,
+        "newline_style": "Unix",
+        "use_small_heuristics": "Max",
+        "imports_granularity": "Module",
+        "group_imports": "StdExternalCrate",
+        "format_strings": true,
+        "wrap_comments": true,
+        "comment_width": 100,
+        "normalize_comments": true,
+        "format_code_in_doc_comments": true
+    },
+    "editor": {
+        "formatOnSave": true,
+        "formatOnType": true,
+        "rulers": [100],
+        "tabSize": 4,
+        "insertSpaces": true,
+        "detectIndentation": false,
+        "trimTrailingWhitespace": true,
+        "insertFinalNewline": true,
+        "trimFinalNewlines": true
+    },
+    "rust-analyzer": {
+        "checkOnSave": true,
+        "check": {
+            "command": "clippy",
+            "features": "all"
+        },
+        "procMacro": {
+            "enable": true
+        },
+        "cargo": {
+            "loadOutDirsFromCheck": true,
+            "buildScripts": {
+                "enable": true
+            }
+        },
+        "diagnostics": {
+            "enable": true,
+            "experimental": {
+                "enable": true
+            }
+        }
+    }
+} 
