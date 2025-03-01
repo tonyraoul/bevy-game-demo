@@ -41,8 +41,8 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [ ] Balance number of enemies
 
 ### UI and Scoring [Priority 3]
-- [ ] Design and implement HUD
-  - [ ] Add score display
+- [x] Design and implement HUD
+  - [x] Add score display
   - [ ] Create health/status indicators
   - [ ] Add mini-map or position indicators
 - [x] Create scoring system
@@ -103,6 +103,7 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
 - **Score System**: Start with 10 points, lose points when falling off the platform
 - **Dynamic Platform**: Large floating platform with glowing edges for better visibility
 - **Respawn System**: Automatic respawn when falling off the platform
+- **Game HUD**: Real-time score display in the top-left corner
 
 ## Technical Details
 
