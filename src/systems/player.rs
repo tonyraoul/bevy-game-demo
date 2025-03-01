@@ -11,6 +11,7 @@ const BASE_MOVEMENT_FORCE: f32 = 20.0;
 const MAX_SPEED: f32 = 8.0;
 const FRICTION: f32 = 0.95;
 const PUSH_FORCE: f32 = 10.0;
+const FALL_ACCELERATION: f32 = 30.0;  // Additional downward force when falling
 
 pub fn player_movement(
     mut player_query: Query<(&mut Transform, &mut Velocity), With<Player>>,
@@ -79,8 +80,14 @@ pub fn handle_collisions(
 
 pub fn check_fall(
     mut player_query: Query<(&mut Transform, &mut Velocity, &mut BearScore), With<Player>>,
+    time: Res<Time>,
 ) {
     for (mut transform, mut velocity, mut score) in player_query.iter_mut() {
+        // Apply extra downward force when falling
+        if transform.translation.y < PLATFORM_HEIGHT {
+            velocity.linvel.y -= FALL_ACCELERATION * time.delta_seconds();
+        }
+
         if transform.translation.y < FALL_THRESHOLD {
             // Reset player position
             transform.translation = SPAWN_POSITION;
@@ -116,8 +123,8 @@ pub fn spawn_player(
         Collider::cuboid(0.5, 0.5, 0.75),
         LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
         Damping {
-            linear_damping: 0.5,
-            angular_damping: 1.0,
+            linear_damping: 0.1,  // Further reduced from 0.5
+            angular_damping: 0.5,  // Further reduced from 1.0
         },
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));

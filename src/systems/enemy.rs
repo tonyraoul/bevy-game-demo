@@ -19,6 +19,7 @@ const BASE_MOVEMENT_FORCE: f32 = 15.0;
 const MAX_SPEED: f32 = 6.0;
 const FRICTION: f32 = 0.95;
 const CHASE_DISTANCE: f32 = 10.0;
+const FALL_ACCELERATION: f32 = 30.0;  // Additional downward force when falling
 
 pub fn spawn_enemies(
     mut commands: Commands,
@@ -56,10 +57,10 @@ fn spawn_enemy(
         Collider::cuboid(0.5, 0.5, 0.75),
         LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
         Damping {
-            linear_damping: 0.5,
-            angular_damping: 1.0,
+            linear_damping: 0.1,  // Further reduced from 0.5
+            angular_damping: 0.5,  // Further reduced from 1.0
         },
-        CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),  // Enemy can collide with environment and other bears
+        CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),
     ));
 }
 
@@ -68,6 +69,11 @@ pub fn handle_enemy_falls(
     time: Res<Time>,
 ) {
     for (mut enemy, mut transform, mut velocity, mut score) in enemy_query.iter_mut() {
+        // Apply extra downward force when falling
+        if transform.translation.y < PLATFORM_HEIGHT && !enemy.is_fallen {
+            velocity.linvel.y -= FALL_ACCELERATION * time.delta_seconds();
+        }
+
         // Check if enemy has fallen
         if transform.translation.y < FALL_THRESHOLD && !enemy.is_fallen {
             println!("Enemy {} has fallen! Position: {:?}", score.name, transform.translation);
