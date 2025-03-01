@@ -14,6 +14,9 @@ use crate::systems::{
     spawn_player,
     spawn_hud,
     spawn_enemies,
+    spawn_game_over_screen,
+    handle_game_over_input,
+    cleanup_game_over,
 };
 use crate::systems::score::update_score_text;
 use crate::plugins::settings::handle_settings;
@@ -38,7 +41,10 @@ impl Plugin for GamePlugin {
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
             ).run_if(in_state(GameState::InGame)))
-            .add_systems(OnExit(GameState::InGame), cleanup_game);
+            .add_systems(OnExit(GameState::InGame), cleanup_game)
+            .add_systems(OnEnter(GameState::GameOver), spawn_game_over_screen)
+            .add_systems(Update, handle_game_over_input.run_if(in_state(GameState::GameOver)))
+            .add_systems(OnExit(GameState::GameOver), cleanup_game_over);
     }
 }
 
@@ -96,8 +102,11 @@ fn setup_game(
     ));
 }
 
-fn cleanup_game(mut commands: Commands, query: Query<Entity, Without<Camera>>) {
+fn cleanup_game(
+    mut commands: Commands,
+    query: Query<Entity, (Without<Camera>, Without<Window>)>,
+) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-} 
+}

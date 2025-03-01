@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
 use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
+use crate::states::GameState;
 
 const FALL_THRESHOLD: f32 = -5.0;
 const SPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
@@ -81,6 +82,7 @@ pub fn handle_collisions(
 pub fn check_fall(
     mut player_query: Query<(&mut Transform, &mut Velocity, &mut BearScore), With<Player>>,
     time: Res<Time>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (mut transform, mut velocity, mut score) in player_query.iter_mut() {
         // Apply extra downward force when falling
@@ -89,13 +91,21 @@ pub fn check_fall(
         }
 
         if transform.translation.y < FALL_THRESHOLD {
+            // Deduct points
+            score.value -= 2;
+            
+            // Check if player has lost all points
+            if score.value <= 0 {
+                // Trigger game over
+                println!("[Player System] Triggering GameOver state, player score: {}", score.value);
+                next_state.set(GameState::GameOver);
+                return;
+            }
+            
             // Reset player position
             transform.translation = SPAWN_POSITION;
             velocity.linvel = Vec3::ZERO;
             velocity.angvel = Vec3::ZERO;
-            
-            // Deduct points
-            score.value -= 2;
         }
     }
 }
@@ -128,4 +138,4 @@ pub fn spawn_player(
         },
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
-} 
+}

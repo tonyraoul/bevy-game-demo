@@ -9,8 +9,8 @@ pub struct BearScore {
 impl BearScore {
     pub fn new(name: String) -> Self {
         Self {
-            value: 10,  // Starting score
+            value: 3,  // Starting score
             name,
         }
     }
-} 
+}
