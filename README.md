@@ -13,18 +13,18 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [ ] Idle animation
   - [ ] Walking animation
   - [ ] Pushing animation
-- [ ] Implement WASD movement system
-  - [ ] Add velocity-based movement
-  - [ ] Add rotation towards movement direction
+- [x] Implement WASD movement system
+  - [x] Add velocity-based movement
+  - [x] Add rotation towards movement direction
   - [ ] Add movement animations
-- [ ] Design and implement the platform
-  - [ ] Create platform mesh
-  - [ ] Add physics colliders
-  - [ ] Add visual effects for platform edges
-- [ ] Implement falling detection
-  - [ ] Add ray casting for ground detection
-  - [ ] Create respawn system
-  - [ ] Add score reduction on fall
+- [x] Design and implement the platform
+  - [x] Create platform mesh
+  - [x] Add physics colliders
+  - [x] Add visual effects for platform edges (glowing border)
+- [x] Implement falling detection
+  - [x] Add position-based fall detection
+  - [x] Create respawn system
+  - [x] Add score reduction on fall
 
 ### Enemy System [Priority 2]
 - [ ] Create enemy bear AI
@@ -45,8 +45,8 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [ ] Add score display
   - [ ] Create health/status indicators
   - [ ] Add mini-map or position indicators
-- [ ] Create scoring system
-  - [ ] Implement score persistence
+- [x] Create scoring system
+  - [x] Implement basic score tracking (10 points, -1 on fall)
   - [ ] Add high score table
   - [ ] Create score animations
 
@@ -80,6 +80,10 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [ ] Obstacle courses
 
 ### Technical Tasks
+- [x] Basic physics setup
+  - [x] Implement Rapier3D physics
+  - [x] Add proper colliders
+  - [x] Configure physics parameters
 - [ ] Optimization
   - [ ] Profile and optimize physics calculations
   - [ ] Implement entity pooling for performance
@@ -93,34 +97,20 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [ ] Add configuration persistence
   - [ ] Create backup system
 
-## Features
+## Current Features
 
-- **Cute Bear Character**: Control a lovable 4-legged bear character
-- **Simple Controls**: Use WASD keys for intuitive movement
-  - W: Move forward
-  - A: Move left
-  - S: Move backward
-  - D: Move right
-- **Physics-Based Movement**: Realistic physics simulation using bevy_rapier3d
-- **Score System**: Start with 10 points and try to maintain them
-- **Penalty System**: Lose a point each time your bear falls off the platform
-- **Clean UI**: Score display and main menu interface
-- **Enemy Bears**: Compete against AI-controlled bears
-  - Bears actively try to push others off the platform
-  - Enemy bears fight among themselves
-  - Dynamic combat system where bears can push and shove each other
-- **Strategic Gameplay**: 
-  - Use other bears' fights to your advantage
-  - Position yourself strategically to avoid being pushed off
-  - Time your movements to dodge aggressive bears
+- **Physics-Based Movement**: Smooth WASD controls with realistic physics using bevy_rapier3d
+- **Score System**: Start with 10 points, lose points when falling off the platform
+- **Dynamic Platform**: Large floating platform with glowing edges for better visibility
+- **Respawn System**: Automatic respawn when falling off the platform
 
 ## Technical Details
 
 Built using:
 - Rust programming language
 - Bevy Game Engine (v0.12)
-- bevy_rapier3d for physics simulation
-- Custom AI behavior system for enemy bears
+- bevy_rapier3d for physics simulation (v0.23.0)
+- Custom physics-based movement system
 
 ## Development Status
 
@@ -170,4 +160,9 @@ Then open your browser and navigate to `http://localhost:8000`
 
 ## Controls
 
-The cube will automatically spin on its Y and X axes. The camera is positioned to view the cube from a slight elevation. 
+- **W**: Move forward
+- **A**: Move left
+- **S**: Move backward
+- **D**: Move right
+
+The character will automatically rotate to face the direction of movement. Physics affects the movement, providing a sense of momentum and weight. 
