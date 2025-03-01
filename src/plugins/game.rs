@@ -11,16 +11,17 @@ impl Plugin for GamePlugin {
             .init_resource::<Score>()
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
-            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player))
+            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud))
             .add_systems(
                 Update,
                 (
                     player_movement,
                     check_fall,
+                    update_score_text,
                 )
                     .run_if(in_state(GameState::InGame))
             )
-            .add_systems(OnExit(GameState::InGame), cleanup_game);
+            .add_systems(OnExit(GameState::InGame), (cleanup_game, cleanup_hud));
     }
 }
 
