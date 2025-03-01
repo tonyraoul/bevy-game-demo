@@ -174,13 +174,19 @@ pub fn enemy_behavior(
             // Apply friction
             velocity.linvel *= FRICTION;
 
-            // Clamp maximum speed
+            // Clamp maximum speed, with higher limit when boosting
             let speed = velocity.linvel.length();
-            if speed > MAX_SPEED {
-                velocity.linvel = velocity.linvel.normalize() * MAX_SPEED;
+            let max_speed = if boost.is_boosting {
+                MAX_SPEED * 1.5  // Higher max speed when boosting
+            } else {
+                MAX_SPEED
+            };
+            
+            if speed > max_speed {
+                velocity.linvel = velocity.linvel.normalize() * max_speed;
             }
         } else {
             velocity.linvel *= FRICTION;
         }
     }
-} 
+}

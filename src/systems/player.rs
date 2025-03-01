@@ -10,16 +10,17 @@ const SPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
 // Physics constants
 const BASE_MOVEMENT_FORCE: f32 = 20.0;
 const MAX_SPEED: f32 = 8.0;
+const BOOST_MAX_SPEED: f32 = 15.0;  // Higher max speed when boosting
 const FRICTION: f32 = 0.95;
 const PUSH_FORCE: f32 = 10.0;
 const FALL_ACCELERATION: f32 = 30.0;  // Additional downward force when falling
 
 pub fn player_movement(
-    mut player_query: Query<(&mut Transform, &mut Velocity), With<Player>>,
+    mut player_query: Query<(&mut Transform, &mut Velocity, &EnergyBoost), With<Player>>,
     keyboard_input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    for (_transform, mut velocity) in player_query.iter_mut() {
+    for (_transform, mut velocity, boost) in player_query.iter_mut() {
         let mut direction = Vec3::ZERO;
 
         if keyboard_input.pressed(KeyCode::W) {
@@ -37,16 +38,30 @@ pub fn player_movement(
 
         if direction != Vec3::ZERO {
             direction = direction.normalize();
-            velocity.linvel += direction * BASE_MOVEMENT_FORCE * time.delta_seconds();
+            
+            // Apply a stronger force when boosting
+            let force = if boost.is_boosting {
+                BASE_MOVEMENT_FORCE * 3.0 // Dramatic boost force
+            } else {
+                BASE_MOVEMENT_FORCE
+            };
+            
+            velocity.linvel += direction * force * time.delta_seconds();
         }
 
         // Apply friction
         velocity.linvel *= FRICTION;
 
-        // Clamp maximum speed
+        // Clamp maximum speed, with higher limit when boosting
         let speed = velocity.linvel.length();
-        if speed > MAX_SPEED {
-            velocity.linvel = velocity.linvel.normalize() * MAX_SPEED;
+        let max_speed = if boost.is_boosting {
+            BOOST_MAX_SPEED
+        } else {
+            MAX_SPEED
+        };
+        
+        if speed > max_speed {
+            velocity.linvel = velocity.linvel.normalize() * max_speed;
         }
     }
 }
