@@ -2,7 +2,8 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
-use crate::components::{Enemy, EnemyState, Player, EnergyBoost};
+use crate::components::{Enemy, EnemyState, Player, EnergyBoost, PLATFORM_HEIGHT};
+use crate::systems::Score;
 
 const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (-8.0, -8.0),
@@ -11,6 +12,15 @@ const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (8.0, 8.0),
 ];
 
+const FALL_THRESHOLD: f32 = -5.0;
+const RESPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
+
+// Physics constants
+const BASE_MOVEMENT_FORCE: f32 = 15.0;
+const MAX_SPEED: f32 = 6.0;
+const FRICTION: f32 = 0.95;
+const CHASE_DISTANCE: f32 = 10.0;
+
 pub fn spawn_enemies(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -18,7 +28,7 @@ pub fn spawn_enemies(
 ) {
     // Spawn initial enemies at corners
     for (x, z) in SPAWN_POSITIONS.iter() {
-        spawn_enemy(&mut commands, &mut meshes, &mut materials, Vec3::new(*x, 2.0, *z));
+        spawn_enemy(&mut commands, &mut meshes, &mut materials, Vec3::new(*x, PLATFORM_HEIGHT + 2.0, *z));
     }
 }
 
@@ -38,7 +48,7 @@ fn spawn_enemy(
             transform: Transform::from_translation(position),
             ..default()
         },
-        Enemy::default(),
+        Enemy::new(),
         EnergyBoost::default(),
         RigidBody::Dynamic,
         Velocity::zero(),
@@ -48,7 +58,44 @@ fn spawn_enemy(
             linear_damping: 5.0,
             angular_damping: 5.0,
         },
+        CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),  // Enemy can collide with environment and other bears
     ));
+}
+
+pub fn handle_enemy_falls(
+    mut enemy_query: Query<(&mut Enemy, &mut Transform, &mut Velocity)>,
+    mut score: ResMut<Score>,
+    time: Res<Time>,
+) {
+    for (mut enemy, mut transform, mut velocity) in enemy_query.iter_mut() {
+        // Check if enemy has fallen
+        if transform.translation.y < FALL_THRESHOLD && !enemy.is_fallen {
+            println!("Enemy has fallen! Position: {:?}", transform.translation);
+            // Enemy has fallen
+            enemy.is_fallen = true;
+            enemy.state = EnemyState::Fallen;
+            enemy.respawn_timer.reset();
+            score.value -= 1;  // Deduct a point
+            
+            // Hide the enemy far below the platform
+            transform.translation.y = FALL_THRESHOLD - 20.0;
+            velocity.linvel = Vec3::ZERO;
+            velocity.angvel = Vec3::ZERO;
+        }
+
+        // Handle respawn timer for fallen enemies
+        if enemy.is_fallen {
+            if enemy.respawn_timer.tick(time.delta()).finished() {
+                println!("Enemy respawning!");
+                // Respawn the enemy
+                enemy.is_fallen = false;
+                enemy.state = EnemyState::Patrol;
+                transform.translation = RESPAWN_POSITION;
+                velocity.linvel = Vec3::ZERO;
+                velocity.angvel = Vec3::ZERO;
+            }
+        }
+    }
 }
 
 pub fn enemy_behavior(
@@ -64,16 +111,26 @@ pub fn enemy_behavior(
     };
 
     for (mut enemy, transform, mut velocity, boost) in enemy_query.iter_mut() {
+        // Skip behavior for fallen enemies
+        if enemy.is_fallen {
+            continue;
+        }
+
         // Update state timer
         enemy.state_timer.tick(time.delta());
 
         if enemy.state_timer.just_finished() {
             // Randomly change state
             if rng.gen_bool(0.3) {
+                // Change to chase if player is nearby
+                let distance_to_player = transform.translation.distance(player_pos);
                 enemy.state = match enemy.state {
-                    EnemyState::Patrol => EnemyState::Chase,
-                    EnemyState::Chase => EnemyState::Patrol,
+                    EnemyState::Patrol if distance_to_player < CHASE_DISTANCE => EnemyState::Chase,
+                    EnemyState::Chase if distance_to_player > CHASE_DISTANCE * 1.5 => EnemyState::Patrol,
+                    EnemyState::Patrol => EnemyState::Patrol,
+                    EnemyState::Chase => EnemyState::Chase,
                     EnemyState::Fight => EnemyState::Patrol,
+                    EnemyState::Fallen => EnemyState::Patrol,
                 };
             }
 
@@ -92,7 +149,8 @@ pub fn enemy_behavior(
                 enemy.target_position.unwrap()
             }
             EnemyState::Chase => player_pos,
-            EnemyState::Fight => continue, // TODO: Implement fighting behavior
+            EnemyState::Fight => continue,
+            EnemyState::Fallen => continue,
         };
 
         // Calculate movement direction
@@ -100,15 +158,25 @@ pub fn enemy_behavior(
         
         // Only move if not too close to target
         if transform.translation.distance(target_pos) > 2.0 {
-            // Apply movement with boost if active
-            let speed = if boost.is_boosting {
-                enemy.movement_speed * 2.5
+            // Apply movement force
+            let force = if boost.is_boosting {
+                BASE_MOVEMENT_FORCE * 2.5
             } else {
-                enemy.movement_speed
+                BASE_MOVEMENT_FORCE
             };
-            velocity.linvel = direction * speed;
+            
+            velocity.linvel += direction * force * time.delta_seconds();
+
+            // Apply friction
+            velocity.linvel *= FRICTION;
+
+            // Clamp maximum speed
+            let speed = velocity.linvel.length();
+            if speed > MAX_SPEED {
+                velocity.linvel = velocity.linvel.normalize() * MAX_SPEED;
+            }
         } else {
-            velocity.linvel = Vec3::ZERO;
+            velocity.linvel *= FRICTION;
         }
     }
 } 

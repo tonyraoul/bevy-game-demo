@@ -16,11 +16,13 @@ impl Plugin for GamePlugin {
                 Update,
                 (
                     player_movement,
+                    handle_collisions,
                     enemy_behavior,
+                    handle_enemy_falls,
+                    check_fall,
                     handle_boost,
                     handle_ai_boost,
                     update_boost_indicator,
-                    check_fall,
                     update_score_text,
                 )
                     .run_if(in_state(GameState::InGame))
