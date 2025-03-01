@@ -4,17 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.12", features = ["wayland"] }
+bevy = { version = "0.12", features = ["dynamic_linking", "wayland"] }
 wasm-bindgen = "0.2"
 uuid = { version = "1.0", features = ["js"] }
 
 # Enable max optimizations for dependencies, but not for our code:
+[profile.dev]
+opt-level = 1      # Enable light optimizations
+incremental = true # Enable incremental compilation
+
+# Enable faster builds of dependencies
 [profile.dev.package."*"]
 opt-level = 3
 
-# Enable optimizations for release builds
+# Optimize release builds
 [profile.release]
 opt-level = 3
+lto = "thin"       # Enable link-time optimization
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen-futures = "0.4"

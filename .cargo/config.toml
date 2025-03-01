@@ -1,0 +1,21 @@
+# Enable a small amount of optimization in debug mode
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+# Enable cross-compilation support
+[target.wasm32-unknown-unknown]
+runner = "wasm-server-runner"
+
+[build]
+# Parse JSON files in parallel
+jobs = 12
+
+# Enable parallel compilation
+codegen-units = 16
+
+[unstable]
+# Enable the next-generation Cargo feature resolver
+features = ["host-config"] 

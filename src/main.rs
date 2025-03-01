@@ -1,27 +1,25 @@
+mod components;
+mod systems;
+mod plugins;
+
 use bevy::{
     prelude::*,
     window::WindowMode,
 };
+use plugins::CubeDemoPlugin;
 
 fn main() {
-    let mut app = App::new();
-    
-    // Add default plugins with customized window settings
-    app.add_plugins(DefaultPlugins.set(WindowPlugin {
-        primary_window: Some(Window {
-            title: "Bevy Demo - Spinning Cube".into(),
-            mode: WindowMode::Windowed,
+    App::new()
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Bevy Demo - Spinning Cube".into(),
+                mode: WindowMode::Windowed,
+                ..default()
+            }),
             ..default()
-        }),
-        ..default()
-    }));
-
-    // Add our systems
-    app.add_systems(Startup, setup)
-        .add_systems(Update, rotate_cube);
-
-    // Run the app
-    app.run();
+        }))
+        .add_plugins(CubeDemoPlugin)
+        .run();
 }
 
 fn setup(
