@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
-use crate::components::{Enemy, EnemyState, Player};
+use crate::components::{Enemy, EnemyState, Player, EnergyBoost};
 
 const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (-8.0, -8.0),
@@ -39,6 +39,7 @@ fn spawn_enemy(
             ..default()
         },
         Enemy::default(),
+        EnergyBoost::default(),
         RigidBody::Dynamic,
         Velocity::zero(),
         Collider::cuboid(0.5, 0.5, 0.75),

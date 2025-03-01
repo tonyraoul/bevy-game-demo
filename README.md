@@ -25,6 +25,11 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [x] Add position-based fall detection
   - [x] Create respawn system
   - [x] Add score reduction on fall
+- [x] Implement energy boost system
+  - [x] Add boost mechanics (Space key)
+  - [x] Add energy recharge system
+  - [x] Add cooldown timer
+  - [x] Add visual indicator
 
 ### Enemy System [Priority 2]
 - [x] Create enemy bear AI
@@ -103,11 +108,18 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
 - **Score System**: Start with 10 points, lose points when falling off the platform
 - **Dynamic Platform**: Large floating platform with glowing edges for better visibility
 - **Respawn System**: Automatic respawn when falling off the platform
-- **Game HUD**: Real-time score display in the top-left corner
+- **Game HUD**: Real-time score display in the top-left corner and energy boost indicator
 - **Enemy AI**: Bears that patrol the platform and chase the player
   - Enemies spawn at platform corners
   - Dynamic state system (patrol/chase)
   - Physics-based movement and collisions
+  - AI-controlled energy boost system
+- **Energy Boost System**:
+  - Press SPACE to activate boost
+  - Visual energy indicator
+  - 2-second recharge time
+  - 1-second cooldown
+  - Available for both player and AI
 
 ## Technical Details
 
@@ -169,5 +181,6 @@ Then open your browser and navigate to `http://localhost:8000`
 - **A**: Move left
 - **S**: Move backward
 - **D**: Move right
+- **SPACE**: Activate energy boost
 
 The character will automatically rotate to face the direction of movement. Physics affects the movement, providing a sense of momentum and weight. 

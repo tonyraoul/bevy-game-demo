@@ -17,6 +17,9 @@ impl Plugin for GamePlugin {
                 (
                     player_movement,
                     enemy_behavior,
+                    handle_boost,
+                    handle_ai_boost,
+                    update_boost_indicator,
                     check_fall,
                     update_score_text,
                 )

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::components::Player;
+use crate::components::{Player, EnergyBoost};
 
 const FALL_THRESHOLD: f32 = -10.0; // Y position that determines when a player has fallen
 const SPAWN_POSITION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
@@ -96,6 +96,7 @@ pub fn spawn_player(
             ..default()
         },
         Player::default(),
+        EnergyBoost::default(),
         RigidBody::Dynamic,
         Velocity::zero(),
         Collider::cuboid(0.5, 0.5, 0.75),

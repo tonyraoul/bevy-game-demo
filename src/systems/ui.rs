@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{GameHud, ScoreText};
+use crate::components::{GameHud, ScoreText, BoostIndicator};
 use crate::systems::Score;
 
 pub fn spawn_hud(mut commands: Commands) {
@@ -14,6 +14,7 @@ pub fn spawn_hud(mut commands: Commands) {
                     justify_content: JustifyContent::FlexStart,
                     align_items: AlignItems::FlexStart,
                     padding: UiRect::all(Val::Px(20.0)),
+                    flex_direction: FlexDirection::Column,
                     ..default()
                 },
                 ..default()
@@ -37,6 +38,34 @@ pub fn spawn_hud(mut commands: Commands) {
                 }),
                 ScoreText,
             ));
+
+            // Boost indicator background
+            parent
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Px(200.0),
+                        height: Val::Px(20.0),
+                        margin: UiRect::all(Val::Px(10.0)),
+                        ..default()
+                    },
+                    background_color: Color::rgb(0.2, 0.2, 0.2).into(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    // Boost indicator fill
+                    parent.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            background_color: Color::rgb(0.9, 0.5, 0.0).into(),
+                            ..default()
+                        },
+                        BoostIndicator,
+                    ));
+                });
         });
 }
 
