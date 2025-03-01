@@ -1,0 +1,25 @@
+# Build output directories
+/target
+debug/
+release/
+
+# Generated WebAssembly files
+/target/wasm/
+
+# Dependencies
+Cargo.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Backup files
+**/*.rs.bk
+*.pdb 
