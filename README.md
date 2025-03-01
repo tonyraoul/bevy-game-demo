@@ -6,6 +6,93 @@ A charming 3D platformer game built with the Bevy game engine and Rust, where yo
 
 In Bevy Bear Balance, you take control of an adorable 4-legged bear who must carefully navigate a suspended platform. But you're not alone! Other bears are also fighting for territory on the platform. The goal is simple: stay on the platform as long as possible while avoiding being pushed off by rival bears. Each time your bear falls off, you lose a precious point from your initial score of 10.
 
+## Development Roadmap
+
+### Core Mechanics [Priority 1]
+- [ ] Create 3D bear model and animations
+  - [ ] Idle animation
+  - [ ] Walking animation
+  - [ ] Pushing animation
+- [ ] Implement WASD movement system
+  - [ ] Add velocity-based movement
+  - [ ] Add rotation towards movement direction
+  - [ ] Add movement animations
+- [ ] Design and implement the platform
+  - [ ] Create platform mesh
+  - [ ] Add physics colliders
+  - [ ] Add visual effects for platform edges
+- [ ] Implement falling detection
+  - [ ] Add ray casting for ground detection
+  - [ ] Create respawn system
+  - [ ] Add score reduction on fall
+
+### Enemy System [Priority 2]
+- [ ] Create enemy bear AI
+  - [ ] Implement pathfinding
+  - [ ] Add target selection logic
+  - [ ] Create behavior states (patrol, chase, fight)
+- [ ] Add combat mechanics
+  - [ ] Implement pushing physics
+  - [ ] Add collision detection for combat
+  - [ ] Create combat animations
+- [ ] Enemy spawning system
+  - [ ] Add spawn points
+  - [ ] Implement wave system
+  - [ ] Balance number of enemies
+
+### UI and Scoring [Priority 3]
+- [ ] Design and implement HUD
+  - [ ] Add score display
+  - [ ] Create health/status indicators
+  - [ ] Add mini-map or position indicators
+- [ ] Create scoring system
+  - [ ] Implement score persistence
+  - [ ] Add high score table
+  - [ ] Create score animations
+
+### Polish and Effects [Priority 4]
+- [ ] Add sound effects
+  - [ ] Movement sounds
+  - [ ] Combat sounds
+  - [ ] Falling sounds
+  - [ ] Background music
+- [ ] Visual effects
+  - [ ] Particle effects for movement
+  - [ ] Combat impact effects
+  - [ ] Fall warning indicators
+- [ ] Game feel improvements
+  - [ ] Camera shake effects
+  - [ ] Screen effects for near-falls
+  - [ ] Haptic feedback indicators
+
+### Additional Features [Priority 5]
+- [ ] Power-up system
+  - [ ] Speed boost
+  - [ ] Strength boost
+  - [ ] Temporary invulnerability
+- [ ] Different game modes
+  - [ ] Time trial
+  - [ ] Survival mode
+  - [ ] Tournament mode
+- [ ] Platform variations
+  - [ ] Moving platforms
+  - [ ] Shrinking platforms
+  - [ ] Obstacle courses
+
+### Technical Tasks
+- [ ] Optimization
+  - [ ] Profile and optimize physics calculations
+  - [ ] Implement entity pooling for performance
+  - [ ] Add level of detail system
+- [ ] Cross-platform support
+  - [ ] Test and fix web export
+  - [ ] Add mobile controls
+  - [ ] Optimize for different platforms
+- [ ] Save system
+  - [ ] Implement save/load functionality
+  - [ ] Add configuration persistence
+  - [ ] Create backup system
+
 ## Features
 
 - **Cute Bear Character**: Control a lovable 4-legged bear character
