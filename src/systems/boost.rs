@@ -1,13 +1,9 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
-use crate::components::{EnergyBoost, Player, Enemy, BoostIndicator, BearScore};
+use crate::components::{EnergyBoost, Player, Enemy, BoostIndicator};
 
-const BOOST_FORCE: f32 = 15.0;
 const BOOST_THRESHOLD: f32 = 0.95;
-const BOOST_DURATION: f32 = 3.0;  // Increased duration
-const BOOST_COOLDOWN: f32 = 2.0;  // Reduced cooldown
 const ENERGY_CONSUMPTION_RATE: f32 = 0.4;  // Energy consumed per second while boosting
 
 pub fn handle_boost(

@@ -3,8 +3,6 @@ use bevy::app::AppExit;
 
 use crate::{
     components::{PauseMenu, PauseButton, PauseButtonAction, PauseState},
-    components::score::BearScore,
-    components::ui::BoostIndicator,
     styles::*,
     states::GameState,
 };
