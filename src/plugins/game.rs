@@ -11,11 +11,12 @@ impl Plugin for GamePlugin {
             .init_resource::<Score>()
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
-            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud))
+            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud, spawn_enemies))
             .add_systems(
                 Update,
                 (
                     player_movement,
+                    enemy_behavior,
                     check_fall,
                     update_score_text,
                 )
