@@ -25,4 +25,19 @@ impl Default for GameSettings {
             paused: false,
         }
     }
-} 
+}
+
+#[derive(Resource)]
+pub struct PauseState {
+    pub transitioning_to_pause: bool,
+    pub was_paused: bool,
+}
+
+impl Default for PauseState {
+    fn default() -> Self {
+        Self {
+            transitioning_to_pause: false,
+            was_paused: false,
+        }
+    }
+}

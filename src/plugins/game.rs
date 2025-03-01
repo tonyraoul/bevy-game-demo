@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
 use crate::GameState;
-use crate::components::GameSettings;
+use crate::components::{GameSettings, PauseState};
 use crate::systems::{
     player_movement,
     enemy_behavior,
@@ -27,13 +27,48 @@ use crate::plugins::settings::handle_settings;
 
 pub struct GamePlugin;
 
+fn cleanup_game(
+    mut commands: Commands,
+    query: Query<Entity, (Without<Camera>, Without<Window>)>,
+) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
+fn conditional_cleanup_game(
+    mut commands: Commands,
+    query: Query<Entity, (Without<Camera>, Without<Window>)>,
+    pause_state: Res<PauseState>,
+    next_state: Res<NextState<GameState>>,
+) {
+    // Only clean up if we're not transitioning to the pause state
+    if !pause_state.transitioning_to_pause {
+        // Check if we're transitioning to a state other than Paused
+        if let Some(state) = next_state.0.as_ref() {
+            if *state != GameState::Paused {
+                cleanup_game(commands, query);
+            }
+        } else {
+            // If no next state is set, clean up anyway
+            cleanup_game(commands, query);
+        }
+    }
+}
+
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
             .init_resource::<GameSettings>()
+            .init_resource::<PauseState>()
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
-            .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud, spawn_enemies))
+            // Add a system set that runs when entering InGame from a state other than Paused
+            .add_systems(
+                OnEnter(GameState::InGame),
+                (setup_game, spawn_player, spawn_hud, spawn_enemies)
+                    .run_if(not(run_if_resuming_from_pause))
+            )
             .add_systems(Update, (
                 handle_boost,
                 handle_ai_boost,
@@ -45,7 +80,7 @@ impl Plugin for GamePlugin {
                 update_score_text.after(handle_enemy_falls),
                 toggle_pause,
             ).run_if(in_state(GameState::InGame)))
-            .add_systems(OnExit(GameState::InGame), cleanup_game)
+            .add_systems(OnExit(GameState::InGame), conditional_cleanup_game)
             .add_systems(OnEnter(GameState::Paused), spawn_pause_menu)
             .add_systems(Update, handle_pause_input.run_if(in_state(GameState::Paused)))
             .add_systems(OnExit(GameState::Paused), cleanup_pause_menu)
@@ -53,6 +88,14 @@ impl Plugin for GamePlugin {
             .add_systems(Update, handle_game_over_input.run_if(in_state(GameState::GameOver)))
             .add_systems(OnExit(GameState::GameOver), cleanup_game_over);
     }
+}
+
+// Function to check if we're resuming from pause
+fn run_if_resuming_from_pause(
+    pause_state: Res<PauseState>,
+) -> bool {
+    // If was_paused is true, we're resuming from pause
+    pause_state.was_paused
 }
 
 fn setup_game(
@@ -107,13 +150,4 @@ fn setup_game(
         Collider::cuboid(10.1, 0.1, 10.1),
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
-}
-
-fn cleanup_game(
-    mut commands: Commands,
-    query: Query<Entity, (Without<Camera>, Without<Window>)>,
-) {
-    for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
-    }
 }

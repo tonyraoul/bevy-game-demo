@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::app::AppExit;
 
 use crate::{
-    components::{PauseMenu, PauseButton, PauseButtonAction},
+    components::{PauseMenu, PauseButton, PauseButtonAction, PauseState},
     styles::*,
     states::GameState,
 };
@@ -16,15 +16,21 @@ pub fn toggle_pause(
     keyboard_input: Res<Input<KeyCode>>,
     current_state: Res<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
+    mut pause_state: ResMut<PauseState>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
         match current_state.get() {
             GameState::InGame => {
                 debug_print("Pausing game");
+                // Set flags to indicate we're transitioning to pause
+                pause_state.transitioning_to_pause = true;
+                pause_state.was_paused = true;
                 next_state.set(GameState::Paused);
             }
             GameState::Paused => {
                 debug_print("Resuming game");
+                // Clear transitioning flag when resuming, but keep was_paused true
+                pause_state.transitioning_to_pause = false;
                 next_state.set(GameState::InGame);
             }
             _ => {}
@@ -110,6 +116,7 @@ pub fn handle_pause_input(
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<GameState>>,
+    mut pause_state: ResMut<PauseState>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
     debug_print("Handling pause input");
@@ -121,10 +128,15 @@ pub fn handle_pause_input(
                 match button.action {
                     PauseButtonAction::Resume => {
                         debug_print("Resume button pressed");
+                        // Clear transitioning flag when resuming, but keep was_paused true
+                        pause_state.transitioning_to_pause = false;
                         next_state.set(GameState::InGame);
                     },
                     PauseButtonAction::MainMenu => {
                         debug_print("Main Menu button pressed");
+                        // Reset both flags when going to main menu
+                        pause_state.transitioning_to_pause = false;
+                        pause_state.was_paused = false;
                         next_state.set(GameState::MainMenu);
                     },
                     PauseButtonAction::Quit => {
