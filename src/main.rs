@@ -1,12 +1,13 @@
 mod components;
 mod systems;
 mod plugins;
+mod styles;
 
 use bevy::{
     prelude::*,
     window::WindowMode,
 };
-use plugins::CubeDemoPlugin;
+use plugins::{CubeDemoPlugin, MenuPlugin};
 
 fn main() {
     App::new()
@@ -18,56 +19,6 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins(CubeDemoPlugin)
+        .add_plugins((CubeDemoPlugin, MenuPlugin))
         .run();
-}
-
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    // Camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 2.0, 6.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
-
-    // Light
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            intensity: 1500.0,
-            shadows_enabled: true,
-            ..default()
-        },
-        transform: Transform::from_xyz(4.0, 8.0, 4.0),
-        ..default()
-    });
-
-    // Cube
-    commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-            material: materials.add(StandardMaterial {
-                base_color: Color::rgb(0.8, 0.2, 0.2),
-                ..default()
-            }),
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
-            ..default()
-        },
-        SpinningCube,
-    ));
-}
-
-#[derive(Component)]
-struct SpinningCube;
-
-fn rotate_cube(
-    time: Res<Time>,
-    mut query: Query<&mut Transform, With<SpinningCube>>,
-) {
-    for mut transform in &mut query {
-        transform.rotate_y(1.0 * time.delta_seconds());
-        transform.rotate_x(0.5 * time.delta_seconds());
-    }
 } 
