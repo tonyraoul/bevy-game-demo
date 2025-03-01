@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT};
-use crate::systems::Score;
+use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
 
 const FALL_THRESHOLD: f32 = -5.0;
 const SPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
@@ -79,10 +78,9 @@ pub fn handle_collisions(
 }
 
 pub fn check_fall(
-    mut player_query: Query<(&mut Transform, &mut Velocity), With<Player>>,
-    mut score: ResMut<Score>,
+    mut player_query: Query<(&mut Transform, &mut Velocity, &mut BearScore), With<Player>>,
 ) {
-    for (mut transform, mut velocity) in player_query.iter_mut() {
+    for (mut transform, mut velocity, mut score) in player_query.iter_mut() {
         if transform.translation.y < FALL_THRESHOLD {
             // Reset player position
             transform.translation = SPAWN_POSITION;
@@ -111,6 +109,7 @@ pub fn spawn_player(
             ..default()
         },
         Player,
+        BearScore::new("Player".to_string()),
         EnergyBoost::default(),
         RigidBody::Dynamic,
         Velocity::zero(),

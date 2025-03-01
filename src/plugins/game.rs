@@ -1,32 +1,46 @@
-use bevy::{prelude::*, pbr::StandardMaterial};
+use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::{states::GameState, systems::*};
+use crate::GameState;
+use crate::components::GameSettings;
+use crate::systems::{
+    player_movement,
+    enemy_behavior,
+    check_fall,
+    handle_enemy_falls,
+    handle_boost,
+    handle_ai_boost,
+    update_boost_indicator,
+    setup_game,
+    spawn_player,
+    spawn_hud,
+    spawn_enemies,
+    cleanup_game,
+    cleanup_hud,
+};
+use crate::systems::score::update_score_text;
+use crate::plugins::settings::handle_settings;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
-            .init_resource::<Score>()
+            .init_resource::<GameSettings>()
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
             .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player, spawn_hud, spawn_enemies))
-            .add_systems(
-                Update,
-                (
-                    player_movement,
-                    handle_collisions,
-                    enemy_behavior,
-                    handle_enemy_falls,
-                    check_fall,
-                    handle_boost,
-                    handle_ai_boost,
-                    update_boost_indicator,
-                    update_score_text,
-                )
-                    .run_if(in_state(GameState::InGame))
-            )
+            .add_systems(Update, (
+                handle_settings,
+                handle_boost,
+                handle_ai_boost,
+                update_boost_indicator,
+                player_movement,
+                enemy_behavior,
+                check_fall,
+                handle_enemy_falls,
+                update_score_text.after(handle_enemy_falls),
+            ).run_if(in_state(GameState::InGame)))
             .add_systems(OnExit(GameState::InGame), (cleanup_game, cleanup_hud));
     }
 }

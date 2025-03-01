@@ -2,8 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
-use crate::components::{Enemy, EnemyState, Player, EnergyBoost, PLATFORM_HEIGHT};
-use crate::systems::Score;
+use crate::components::{Enemy, EnemyState, Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
 
 const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (-8.0, -8.0),
@@ -27,8 +26,8 @@ pub fn spawn_enemies(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // Spawn initial enemies at corners
-    for (x, z) in SPAWN_POSITIONS.iter() {
-        spawn_enemy(&mut commands, &mut meshes, &mut materials, Vec3::new(*x, PLATFORM_HEIGHT + 2.0, *z));
+    for (i, (x, z)) in SPAWN_POSITIONS.iter().enumerate() {
+        spawn_enemy(&mut commands, &mut meshes, &mut materials, Vec3::new(*x, PLATFORM_HEIGHT + 2.0, *z), format!("Enemy {}", i + 1));
     }
 }
 
@@ -37,6 +36,7 @@ fn spawn_enemy(
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
     position: Vec3,
+    name: String,
 ) {
     commands.spawn((
         PbrBundle {
@@ -49,6 +49,7 @@ fn spawn_enemy(
             ..default()
         },
         Enemy::new(),
+        BearScore::new(name),
         EnergyBoost::default(),
         RigidBody::Dynamic,
         Velocity::zero(),
@@ -63,14 +64,13 @@ fn spawn_enemy(
 }
 
 pub fn handle_enemy_falls(
-    mut enemy_query: Query<(&mut Enemy, &mut Transform, &mut Velocity)>,
-    mut score: ResMut<Score>,
+    mut enemy_query: Query<(&mut Enemy, &mut Transform, &mut Velocity, &mut BearScore)>,
     time: Res<Time>,
 ) {
-    for (mut enemy, mut transform, mut velocity) in enemy_query.iter_mut() {
+    for (mut enemy, mut transform, mut velocity, mut score) in enemy_query.iter_mut() {
         // Check if enemy has fallen
         if transform.translation.y < FALL_THRESHOLD && !enemy.is_fallen {
-            println!("Enemy has fallen! Position: {:?}", transform.translation);
+            println!("Enemy {} has fallen! Position: {:?}", score.name, transform.translation);
             // Enemy has fallen
             enemy.is_fallen = true;
             enemy.state = EnemyState::Fallen;
@@ -86,7 +86,7 @@ pub fn handle_enemy_falls(
         // Handle respawn timer for fallen enemies
         if enemy.is_fallen {
             if enemy.respawn_timer.tick(time.delta()).finished() {
-                println!("Enemy respawning!");
+                println!("Enemy {} respawning!", score.name);
                 // Respawn the enemy
                 enemy.is_fallen = false;
                 enemy.state = EnemyState::Patrol;

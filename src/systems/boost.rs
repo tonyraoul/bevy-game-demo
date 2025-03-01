@@ -2,10 +2,12 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
-use crate::components::{EnergyBoost, Player, Enemy, BoostIndicator};
+use crate::components::{EnergyBoost, Player, Enemy, BoostIndicator, BearScore};
 
 const BOOST_FORCE: f32 = 15.0;
 const BOOST_THRESHOLD: f32 = 0.95;
+const BOOST_DURATION: f32 = 2.0;
+const BOOST_COOLDOWN: f32 = 3.0;
 
 pub fn handle_boost(
     mut query: Query<(&mut EnergyBoost, &Player)>,

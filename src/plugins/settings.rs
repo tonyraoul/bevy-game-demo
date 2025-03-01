@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::states::GameState;
+use crate::components::GameSettings;
 
 pub struct SettingsPlugin;
 
@@ -38,8 +39,9 @@ fn setup_settings(mut commands: Commands) {
     ));
 }
 
-fn handle_settings(
-    mut keys: ResMut<Input<KeyCode>>,
+pub fn handle_settings(
+    keys: ResMut<Input<KeyCode>>,
+    mut settings: ResMut<GameSettings>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     if keys.just_pressed(KeyCode::Escape) {
