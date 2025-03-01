@@ -8,10 +8,18 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
+            .init_resource::<Score>()
             .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
             .add_plugins(RapierDebugRenderPlugin::default())
             .add_systems(OnEnter(GameState::InGame), (setup_game, spawn_player))
-            .add_systems(Update, player_movement.run_if(in_state(GameState::InGame)))
+            .add_systems(
+                Update,
+                (
+                    player_movement,
+                    check_fall,
+                )
+                    .run_if(in_state(GameState::InGame))
+            )
             .add_systems(OnExit(GameState::InGame), cleanup_game);
     }
 }

@@ -3,6 +3,20 @@ use bevy_rapier3d::prelude::*;
 
 use crate::components::Player;
 
+const FALL_THRESHOLD: f32 = -10.0; // Y position that determines when a player has fallen
+const SPAWN_POSITION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
+
+#[derive(Resource)]
+pub struct Score {
+    pub value: i32,
+}
+
+impl Default for Score {
+    fn default() -> Self {
+        Self { value: 10 }
+    }
+}
+
 pub fn player_movement(
     mut player_query: Query<(&Player, &mut Transform, &mut Velocity)>,
     keyboard: Res<Input<KeyCode>>,
@@ -48,6 +62,23 @@ pub fn player_movement(
     }
 }
 
+pub fn check_fall(
+    mut player_query: Query<(&mut Transform, &mut Velocity), With<Player>>,
+    mut score: ResMut<Score>,
+) {
+    for (mut transform, mut velocity) in player_query.iter_mut() {
+        if transform.translation.y < FALL_THRESHOLD {
+            // Player has fallen
+            score.value -= 1;
+            
+            // Reset position and velocity
+            transform.translation = SPAWN_POSITION;
+            velocity.linvel = Vec3::ZERO;
+            velocity.angvel = Vec3::ZERO;
+        }
+    }
+}
+
 pub fn spawn_player(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -61,7 +92,7 @@ pub fn spawn_player(
                 base_color: Color::rgb(0.6, 0.4, 0.2),
                 ..default()
             }),
-            transform: Transform::from_xyz(0.0, 2.0, 0.0),
+            transform: Transform::from_xyz(SPAWN_POSITION.x, SPAWN_POSITION.y, SPAWN_POSITION.z),
             ..default()
         },
         Player::default(),
