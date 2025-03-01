@@ -13,8 +13,9 @@ pub struct Enemy {
     pub respawn_timer: Timer,
 }
 
-#[derive(Component, Debug, Clone, Copy, PartialEq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq, Default)]
 pub enum EnemyState {
+    #[default]
     Patrol,
     Chase,
     Fallen,

@@ -129,7 +129,6 @@ pub fn enemy_behavior(
                     EnemyState::Chase if distance_to_player > CHASE_DISTANCE * 1.5 => EnemyState::Patrol,
                     EnemyState::Patrol => EnemyState::Patrol,
                     EnemyState::Chase => EnemyState::Chase,
-                    EnemyState::Fight => EnemyState::Patrol,
                     EnemyState::Fallen => EnemyState::Patrol,
                 };
             }
@@ -149,7 +148,6 @@ pub fn enemy_behavior(
                 enemy.target_position.unwrap()
             }
             EnemyState::Chase => player_pos,
-            EnemyState::Fight => continue,
             EnemyState::Fallen => continue,
         };
 

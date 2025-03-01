@@ -11,12 +11,9 @@ use crate::systems::{
     handle_boost,
     handle_ai_boost,
     update_boost_indicator,
-    setup_game,
     spawn_player,
     spawn_hud,
     spawn_enemies,
-    cleanup_game,
-    cleanup_hud,
 };
 use crate::systems::score::update_score_text;
 use crate::plugins::settings::handle_settings;
@@ -41,7 +38,7 @@ impl Plugin for GamePlugin {
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
             ).run_if(in_state(GameState::InGame)))
-            .add_systems(OnExit(GameState::InGame), (cleanup_game, cleanup_hud));
+            .add_systems(OnExit(GameState::InGame), cleanup_game);
     }
 }
 
@@ -50,58 +47,57 @@ fn setup_game(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // Camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-15.0, 15.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
-
     // Light
     commands.spawn(DirectionalLightBundle {
         directional_light: DirectionalLight {
             shadows_enabled: true,
-            illuminance: 10000.0,
             ..default()
         },
-        transform: Transform::from_xyz(4.0, 8.0, 4.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(-15.0, 20.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 
-    // Platform - Main surface
+    // Camera
+    commands.spawn(Camera3dBundle {
+        transform: Transform::from_xyz(-15.0, 20.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+        ..default()
+    });
+
+    // Platform
     commands.spawn((
         PbrBundle {
             mesh: meshes.add(shape::Box::new(20.0, 1.0, 20.0).into()),
             material: materials.add(StandardMaterial {
                 base_color: Color::rgb(0.3, 0.5, 0.3),
-                metallic: 0.0,
-                perceptual_roughness: 1.0,
                 ..default()
             }),
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+            transform: Transform::from_xyz(0.0, 5.0, 0.0),
             ..default()
         },
-        Collider::cuboid(10.0, 0.5, 10.0),
         RigidBody::Fixed,
+        Collider::cuboid(10.0, 0.5, 10.0),
+        CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
 
-    // Platform - Edge highlight
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Box::new(20.2, 0.2, 20.2).into()),
-        material: materials.add(StandardMaterial {
-            base_color: Color::rgb(0.8, 0.7, 0.0),
-            emissive: Color::rgb(0.5, 0.4, 0.0),
+    // Platform edge highlight
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(shape::Box::new(20.2, 0.2, 20.2).into()),
+            material: materials.add(StandardMaterial {
+                base_color: Color::rgb(0.8, 0.6, 0.2),
+                ..default()
+            }),
+            transform: Transform::from_xyz(0.0, 5.6, 0.0),
             ..default()
-        }),
-        transform: Transform::from_xyz(0.0, 0.6, 0.0),
-        ..default()
-    });
+        },
+        RigidBody::Fixed,
+        Collider::cuboid(10.1, 0.1, 10.1),
+        CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
+    ));
 }
 
-fn cleanup_game(
-    mut commands: Commands,
-    entities: Query<Entity, Or<(With<Camera3d>, With<DirectionalLight>, With<Handle<Mesh>>)>>,
-) {
-    for entity in entities.iter() {
+fn cleanup_game(mut commands: Commands, query: Query<Entity, Without<Camera>>) {
+    for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 } 
