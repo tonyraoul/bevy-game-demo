@@ -27,16 +27,16 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [x] Add score reduction on fall
 
 ### Enemy System [Priority 2]
-- [ ] Create enemy bear AI
-  - [ ] Implement pathfinding
-  - [ ] Add target selection logic
-  - [ ] Create behavior states (patrol, chase, fight)
+- [x] Create enemy bear AI
+  - [x] Implement pathfinding
+  - [x] Add target selection logic
+  - [x] Create behavior states (patrol, chase, fight)
 - [ ] Add combat mechanics
   - [ ] Implement pushing physics
   - [ ] Add collision detection for combat
   - [ ] Create combat animations
-- [ ] Enemy spawning system
-  - [ ] Add spawn points
+- [x] Enemy spawning system
+  - [x] Add spawn points
   - [ ] Implement wave system
   - [ ] Balance number of enemies
 
@@ -104,6 +104,10 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
 - **Dynamic Platform**: Large floating platform with glowing edges for better visibility
 - **Respawn System**: Automatic respawn when falling off the platform
 - **Game HUD**: Real-time score display in the top-left corner
+- **Enemy AI**: Bears that patrol the platform and chase the player
+  - Enemies spawn at platform corners
+  - Dynamic state system (patrol/chase)
+  - Physics-based movement and collisions
 
 ## Technical Details
 
