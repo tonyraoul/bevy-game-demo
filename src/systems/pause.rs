@@ -3,6 +3,8 @@ use bevy::app::AppExit;
 
 use crate::{
     components::{PauseMenu, PauseButton, PauseButtonAction, PauseState},
+    components::score::BearScore,
+    components::ui::BoostIndicator,
     styles::*,
     states::GameState,
 };
@@ -118,6 +120,10 @@ pub fn handle_pause_input(
     mut next_state: ResMut<NextState<GameState>>,
     mut pause_state: ResMut<PauseState>,
     mut app_exit_events: EventWriter<AppExit>,
+    mut commands: Commands,
+    query: Query<Entity, Without<Camera>>,
+    camera_query: Query<Entity, With<Camera>>,
+    window_query: Query<Entity, With<Window>>,
 ) {
     debug_print("Handling pause input");
     
@@ -137,6 +143,14 @@ pub fn handle_pause_input(
                         // Reset both flags when going to main menu
                         pause_state.transitioning_to_pause = false;
                         pause_state.was_paused = false;
+                        
+                        // Clean up all game entities except camera and window
+                        for entity in query.iter() {
+                            if camera_query.get(entity).is_err() && window_query.get(entity).is_err() {
+                                commands.entity(entity).despawn_recursive();
+                            }
+                        }
+                        
                         next_state.set(GameState::MainMenu);
                     },
                     PauseButtonAction::Quit => {

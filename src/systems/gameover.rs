@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{GameOverScreen, FinalScoreText, GameOverButton, GameOverButtonAction, BearScore},
+    components::{GameOverScreen, FinalScoreText, GameOverButton, GameOverButtonAction, BearScore, BoostIndicator},
     styles::*,
     states::GameState,
 };
@@ -129,6 +129,9 @@ pub fn handle_game_over_input(
         (Changed<Interaction>, With<Button>),
     >,
     mut next_state: ResMut<NextState<GameState>>,
+    mut commands: Commands,
+    score_query: Query<Entity, With<BearScore>>,
+    boost_indicator_query: Query<Entity, With<BoostIndicator>>,
 ) {
     debug_print("Handling game over input");
     
@@ -143,6 +146,19 @@ pub fn handle_game_over_input(
                     },
                     GameOverButtonAction::MainMenu => {
                         debug_print("Main Menu button pressed");
+                        
+                        // Clean up score entities
+                        for entity in score_query.iter() {
+                            debug_print(&format!("Despawning score entity: {:?}", entity));
+                            commands.entity(entity).despawn_recursive();
+                        }
+                        
+                        // Clean up boost indicator entities
+                        for entity in boost_indicator_query.iter() {
+                            debug_print(&format!("Despawning boost indicator entity: {:?}", entity));
+                            commands.entity(entity).despawn_recursive();
+                        }
+                        
                         next_state.set(GameState::MainMenu);
                     },
                 }

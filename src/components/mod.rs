@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
-mod menu;
-mod player;
-mod ui;
-mod enemy;
-mod boost;
-mod score;
+pub mod menu;
+pub mod player;
+pub mod ui;
+pub mod enemy;
+pub mod boost;
+pub mod score;
 
 pub use menu::*;
 pub use player::*;
