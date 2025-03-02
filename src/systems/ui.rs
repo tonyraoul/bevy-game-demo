@@ -1,6 +1,12 @@
 use bevy::prelude::*;
 
-use crate::components::{GameHud, ScoreText, BoostIndicator, BearScore};
+use crate::components::{
+    GameHud, 
+    ScoreText, 
+    BoostIndicator, 
+    BoostText, 
+    BearScore
+};
 
 pub fn spawn_hud(mut commands: Commands) {
     // Root node
@@ -47,30 +53,58 @@ pub fn spawn_hud(mut commands: Commands) {
             parent
                 .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Px(200.0),
+                        width: Val::Px(250.0), // Increased width to accommodate text
                         height: Val::Px(20.0),
                         position_type: PositionType::Absolute,
                         right: Val::Px(10.0),
                         top: Val::Px(10.0),
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::Center,
                         ..default()
                     },
-                    background_color: Color::rgb(0.2, 0.2, 0.2).into(),
                     ..default()
                 })
                 .with_children(|parent| {
-                    // Boost fill
-                    parent.spawn((
-                        NodeBundle {
-                            style: Style {
-                                width: Val::Percent(100.0),
-                                height: Val::Percent(100.0),
+                    // Boost text
+                    parent.spawn(
+                        TextBundle::from_section(
+                            "Boost:",
+                            TextStyle {
+                                font_size: 16.0,
+                                color: Color::WHITE,
                                 ..default()
-                            },
-                            background_color: Color::rgb(1.0, 0.5, 0.0).into(),
+                            }
+                        )
+                        .with_style(Style {
+                            margin: UiRect::right(Val::Px(10.0)),
+                            ..default()
+                        })
+                    ).insert(BoostText);
+
+                    // Boost background
+                    parent.spawn(NodeBundle {
+                        style: Style {
+                            width: Val::Px(200.0),
+                            height: Val::Px(20.0),
                             ..default()
                         },
-                        BoostIndicator,
-                    ));
+                        background_color: Color::rgb(0.2, 0.2, 0.2).into(),
+                        ..default()
+                    })
+                    .with_children(|parent| {
+                        // Boost fill
+                        parent.spawn(
+                            NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(100.0),
+                                    height: Val::Percent(100.0),
+                                    ..default()
+                                },
+                                background_color: Color::rgb(1.0, 0.5, 0.0).into(),
+                                ..default()
+                            }
+                        ).insert(BoostIndicator);
+                    });
                 });
         });
 }
@@ -105,4 +139,4 @@ pub fn cleanup_hud(mut commands: Commands, hud_query: Query<Entity, With<GameHud
     for entity in hud_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-} 
+}

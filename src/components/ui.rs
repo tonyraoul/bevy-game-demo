@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::ecs::component::Component;
 
 #[derive(Component)]
 pub struct ScoreText;
@@ -8,6 +9,9 @@ pub struct GameHud;
 
 #[derive(Component)]
 pub struct BoostIndicator;
+
+#[derive(Component)]
+pub struct BoostText;
 
 #[derive(Component)]
 pub struct GameOverScreen;
