@@ -4,10 +4,10 @@ use rand::Rng;
 
 use crate::components::{Enemy, EnemyState, Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
 
-const SPAWN_POSITIONS: [(f32, f32); 1] = [
-    // (-8.0, -8.0),
-    // (-8.0, 8.0),
-    // (8.0, -8.0),
+const SPAWN_POSITIONS: [(f32, f32); 4] = [
+    (-8.0, -8.0),
+    (-8.0, 8.0),
+    (8.0, -8.0),
     (8.0, 8.0),
 ];
 
@@ -83,8 +83,8 @@ pub fn handle_enemy_falls(
             enemy.respawn_timer.reset();
             score.value -= 1;  // Deduct a point
             
-            // Hide the enemy far below the platform
-            transform.translation.y = FALL_THRESHOLD - 20.0;
+            // Keep the enemy at the bottom of the platform
+            transform.translation.y = FALL_THRESHOLD;
             velocity.linvel = Vec3::ZERO;
             velocity.angvel = Vec3::ZERO;
         }

@@ -81,7 +81,7 @@ impl Plugin for GamePlugin {
                 handle_ai_boost,
                 update_boost_indicator,
                 player_movement,
-                // enemy_behavior,
+                enemy_behavior,
                 check_fall,
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
