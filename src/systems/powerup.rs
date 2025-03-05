@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::math::Vec3Swizzles;
+// Removed unused import
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 use crate::components::{

@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+// Removed unused import
 use bevy::ecs::component::Component;
 
 #[derive(Component)]

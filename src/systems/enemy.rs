@@ -4,10 +4,10 @@ use rand::Rng;
 
 use crate::components::{Enemy, EnemyState, Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
 
-const SPAWN_POSITIONS: [(f32, f32); 4] = [
-    (-8.0, -8.0),
-    (-8.0, 8.0),
-    (8.0, -8.0),
+const SPAWN_POSITIONS: [(f32, f32); 1] = [
+    // (-8.0, -8.0),
+    // (-8.0, 8.0),
+    // (8.0, -8.0),
     (8.0, 8.0),
 ];
 

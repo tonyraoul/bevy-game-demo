@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::GameState;
+use crate::states::GameState;
 use crate::components::{GameSettings, PauseState};
 use crate::systems::{
     player_movement,
@@ -25,9 +25,12 @@ use crate::systems::{
     spawn_random_powerup_coin,
     collect_powerup_coin,
     remove_expired_powerup_coins,
+    check_win_condition,
+    spawn_win_screen,
+    cleanup_win_screen,
+    handle_win_screen_input,
 };
 use crate::systems::score::update_score_text;
-use crate::plugins::settings::handle_settings;
 
 pub struct GamePlugin;
 
@@ -78,7 +81,7 @@ impl Plugin for GamePlugin {
                 handle_ai_boost,
                 update_boost_indicator,
                 player_movement,
-                enemy_behavior,
+                // enemy_behavior,
                 check_fall,
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
@@ -87,6 +90,7 @@ impl Plugin for GamePlugin {
                 collect_powerup_coin,
                 remove_expired_powerup_coins,
                 toggle_pause,
+                check_win_condition,
             ).run_if(in_state(GameState::InGame)))
             .add_systems(OnExit(GameState::InGame), conditional_cleanup_game)
             .add_systems(OnEnter(GameState::Paused), spawn_pause_menu)
@@ -94,7 +98,10 @@ impl Plugin for GamePlugin {
             .add_systems(OnExit(GameState::Paused), cleanup_pause_menu)
             .add_systems(OnEnter(GameState::GameOver), spawn_game_over_screen)
             .add_systems(Update, handle_game_over_input.run_if(in_state(GameState::GameOver)))
-            .add_systems(OnExit(GameState::GameOver), cleanup_game_over);
+            .add_systems(OnExit(GameState::GameOver), cleanup_game_over)
+            .add_systems(OnEnter(GameState::WinScreen), spawn_win_screen)
+            .add_systems(Update, handle_win_screen_input.run_if(in_state(GameState::WinScreen)))
+            .add_systems(OnExit(GameState::WinScreen), cleanup_win_screen);
     }
 }
 
