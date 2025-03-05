@@ -21,6 +21,10 @@ use crate::systems::{
     spawn_pause_menu,
     handle_pause_input,
     cleanup_pause_menu,
+    apply_powerup_effects,
+    spawn_random_powerup_coin,
+    collect_powerup_coin,
+    remove_expired_powerup_coins,
 };
 use crate::systems::score::update_score_text;
 use crate::plugins::settings::handle_settings;
@@ -78,6 +82,10 @@ impl Plugin for GamePlugin {
                 check_fall,
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
+                apply_powerup_effects,
+                spawn_random_powerup_coin,
+                collect_powerup_coin,
+                remove_expired_powerup_coins,
                 toggle_pause,
             ).run_if(in_state(GameState::InGame)))
             .add_systems(OnExit(GameState::InGame), conditional_cleanup_game)

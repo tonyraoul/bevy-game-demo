@@ -132,27 +132,28 @@ pub fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(shape::Box::new(1.0, 1.0, 1.5).into()),
-            material: materials.add(StandardMaterial {
-                base_color: Color::rgb(0.2, 0.7, 0.2),
+        commands.spawn((
+            PbrBundle {
+                mesh: meshes.add(shape::Box::new(1.0, 1.0, 1.5).into()),
+                material: materials.add(StandardMaterial {
+                    base_color: Color::rgb(0.2, 0.7, 0.2),
+                    ..default()
+                }),
+                transform: Transform::from_translation(SPAWN_POSITION),
                 ..default()
-            }),
-            transform: Transform::from_translation(SPAWN_POSITION),
-            ..default()
-        },
-        Player,
-        BearScore::new("Player".to_string()),
-        EnergyBoost::default(),
-        RigidBody::Dynamic,
-        Velocity::zero(),
-        Collider::cuboid(0.5, 0.5, 0.75),
-        LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
-        Damping {
-            linear_damping: 0.1,  // Further reduced from 0.5
-            angular_damping: 0.5,  // Further reduced from 1.0
-        },
-        CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
-    ));
+            },
+            Player::new(8.0),
+            BearScore::new("Player".to_string()),
+            EnergyBoost::default(),
+            crate::components::ActivePowerUp::default(),
+            RigidBody::Dynamic,
+            Velocity::zero(),
+            Collider::cuboid(0.5, 0.5, 0.75),
+            LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
+            Damping {
+                linear_damping: 0.1,  // Further reduced from 0.5
+                angular_damping: 0.5,  // Further reduced from 1.0
+            },
+            CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
+        ));
 }

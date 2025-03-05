@@ -6,6 +6,7 @@ pub mod ui;
 pub mod enemy;
 pub mod boost;
 pub mod score;
+pub mod powerup;
 
 pub use menu::*;
 pub use player::*;
@@ -13,6 +14,7 @@ pub use ui::*;
 pub use enemy::*;
 pub use boost::*;
 pub use score::*;
+pub use powerup::*;
 
 #[derive(Resource)]
 pub struct GameSettings {
