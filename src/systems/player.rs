@@ -23,6 +23,7 @@ pub fn player_movement(
     for (_transform, mut velocity, boost) in player_query.iter_mut() {
         let mut direction = Vec3::ZERO;
 
+        // Diagonal movement handling with normalized speed
         if keyboard_input.pressed(KeyCode::W) {
             direction.z -= 1.0;
         }
@@ -37,25 +38,26 @@ pub fn player_movement(
         }
 
         if direction != Vec3::ZERO {
+            // Normalize diagonal movement
             direction = direction.normalize();
             
-            // Apply a stronger force when boosting
-            let force = if boost.is_boosting {
-                BASE_MOVEMENT_FORCE * 3.0 // Dramatic boost force
+            // Smooth acceleration
+            let acceleration = if boost.is_boosting {
+                BASE_MOVEMENT_FORCE * 3.5  // Enhanced boost acceleration
             } else {
-                BASE_MOVEMENT_FORCE
+                BASE_MOVEMENT_FORCE * 1.2  // Smoother base acceleration
             };
             
-            velocity.linvel += direction * force * time.delta_seconds();
+            velocity.linvel += direction * acceleration * time.delta_seconds();
+        } else {
+            // Gradual deceleration when no input
+            velocity.linvel *= 0.9;
         }
-
-        // Apply friction
-        velocity.linvel *= FRICTION;
 
         // Clamp maximum speed, with higher limit when boosting
         let speed = velocity.linvel.length();
         let max_speed = if boost.is_boosting {
-            BOOST_MAX_SPEED
+            BOOST_MAX_SPEED * 1.2  // Slightly higher boost speed
         } else {
             MAX_SPEED
         };

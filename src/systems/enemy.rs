@@ -125,27 +125,38 @@ pub fn enemy_behavior(
         // Update state timer
         enemy.state_timer.tick(time.delta());
 
+        // More sophisticated state transitions
         if enemy.state_timer.just_finished() {
-            // Randomly change state
-            if rng.gen_bool(0.3) {
-                // Change to chase if player is nearby
-                let distance_to_player = transform.translation.distance(player_pos);
-                enemy.state = match enemy.state {
-                    EnemyState::Patrol if distance_to_player < CHASE_DISTANCE => EnemyState::Chase,
-                    EnemyState::Chase if distance_to_player > CHASE_DISTANCE * 1.5 => EnemyState::Patrol,
-                    EnemyState::Patrol => EnemyState::Patrol,
-                    EnemyState::Chase => EnemyState::Chase,
-                    EnemyState::Fallen => EnemyState::Patrol,
-                };
-            }
-
-            // Get new target position for patrol
-            if enemy.state == EnemyState::Patrol {
-                enemy.target_position = Some(Enemy::get_random_platform_position());
-            }
+            let distance_to_player = transform.translation.distance(player_pos);
+            
+            // Weighted state transitions
+            enemy.state = match enemy.state {
+                EnemyState::Patrol => {
+                    // Higher chance to chase if player is close
+                    if distance_to_player < CHASE_DISTANCE && rng.gen_bool(0.7) {
+                        EnemyState::Chase
+                    } else if rng.gen_bool(0.3) {
+                        // Occasional wandering or brief pause
+                        EnemyState::Patrol
+                    } else {
+                        enemy.target_position = Some(Enemy::get_random_platform_position());
+                        EnemyState::Patrol
+                    }
+                },
+                EnemyState::Chase => {
+                    // Return to patrol if player is far or randomly decide to stop chasing
+                    if distance_to_player > CHASE_DISTANCE * 1.5 || rng.gen_bool(0.4) {
+                        enemy.target_position = Some(Enemy::get_random_platform_position());
+                        EnemyState::Patrol
+                    } else {
+                        EnemyState::Chase
+                    }
+                },
+                EnemyState::Fallen => EnemyState::Patrol,
+            };
         }
 
-        // Handle behavior based on state
+        // Handle behavior based on state with more nuanced movement
         let target_pos = match enemy.state {
             EnemyState::Patrol => {
                 if enemy.target_position.is_none() {
@@ -153,40 +164,62 @@ pub fn enemy_behavior(
                 }
                 enemy.target_position.unwrap()
             }
-            EnemyState::Chase => player_pos,
+            EnemyState::Chase => {
+                // Predictive chasing: aim slightly ahead of player
+                let prediction_factor = 1.5;
+                player_pos + (player_pos - transform.translation).normalize() * prediction_factor
+            }
             EnemyState::Fallen => continue,
         };
 
-        // Calculate movement direction
-        let direction = (target_pos - transform.translation).normalize();
+        // Calculate movement direction with slight randomness
+        let base_direction = (target_pos - transform.translation).normalize();
+        let jitter_factor = match enemy.state {
+            EnemyState::Patrol => 0.2,  // More wandering in patrol
+            EnemyState::Chase => 0.1,   // More precise in chase
+            _ => 0.0,
+        };
         
+        let jittered_direction = base_direction + Vec3::new(
+            rng.gen_range(-jitter_factor..jitter_factor),
+            0.0,
+            rng.gen_range(-jitter_factor..jitter_factor)
+        ).normalize();
+
         // Only move if not too close to target
         if transform.translation.distance(target_pos) > 2.0 {
-            // Apply movement force
-            let force = if boost.is_boosting {
-                BASE_MOVEMENT_FORCE * 2.5
-            } else {
-                BASE_MOVEMENT_FORCE
+            // Dynamic force based on state and boost
+            let force_multiplier = match (enemy.state, boost.is_boosting) {
+                (EnemyState::Chase, true) => 3.0,   // Aggressive chase with boost
+                (EnemyState::Chase, false) => 2.0,  // Determined chase
+                (EnemyState::Patrol, true) => 2.5,  // Boosted patrol
+                _ => 1.0,
             };
             
-            velocity.linvel += direction * force * time.delta_seconds();
+            let force = BASE_MOVEMENT_FORCE * force_multiplier;
+            velocity.linvel += jittered_direction * force * time.delta_seconds();
 
-            // Apply friction
-            velocity.linvel *= FRICTION;
+            // Adaptive friction and speed
+            velocity.linvel *= match enemy.state {
+                EnemyState::Chase => 0.98,  // Less friction when chasing
+                _ => FRICTION,
+            };
 
-            // Clamp maximum speed, with higher limit when boosting
+            // Dynamic max speed
+            let max_speed = match (enemy.state, boost.is_boosting) {
+                (EnemyState::Chase, true) => MAX_SPEED * 2.0,
+                (EnemyState::Chase, false) => MAX_SPEED * 1.5,
+                (EnemyState::Patrol, true) => MAX_SPEED * 1.3,
+                _ => MAX_SPEED,
+            };
+            
             let speed = velocity.linvel.length();
-            let max_speed = if boost.is_boosting {
-                MAX_SPEED * 1.5  // Higher max speed when boosting
-            } else {
-                MAX_SPEED
-            };
-            
             if speed > max_speed {
                 velocity.linvel = velocity.linvel.normalize() * max_speed;
             }
         } else {
-            velocity.linvel *= FRICTION;
+            // Gradual deceleration when near target
+            velocity.linvel *= 0.9;
         }
     }
 }
