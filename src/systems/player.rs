@@ -107,7 +107,7 @@ pub fn check_fall(
 
         if transform.translation.y < FALL_THRESHOLD {
             // Deduct points
-            score.value -= 2;
+            score.value -= 1;
             
             // Check if player has lost all points
             if score.value <= 0 {
