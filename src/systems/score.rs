@@ -8,13 +8,7 @@ pub fn update_score_text(
     if let Some(mut text) = text_query.iter_mut().next() {
         let mut scores: Vec<(&String, i32)> = score_query
             .iter()
-            .filter_map(|(score, transform)| {
-                if transform.translation.y > -5.0 {
-                    Some((&score.name, score.value))
-                } else {
-                    None
-                }
-            })
+            .map(|(score, _)| (&score.name, score.value))
             .collect();
 
         scores.sort_by(|a, b| b.1.cmp(&a.1));
