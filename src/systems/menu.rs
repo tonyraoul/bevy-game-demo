@@ -51,6 +51,7 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu_button(&mut commands, &asset_server, "Play", MenuButtonAction::Play, main_menu);
     spawn_menu_button(&mut commands, &asset_server, "Settings", MenuButtonAction::Settings, main_menu);
     spawn_menu_button(&mut commands, &asset_server, "Quit", MenuButtonAction::Quit, main_menu);
+    spawn_menu_button(&mut commands, &asset_server, "Secret", MenuButtonAction::Secret, main_menu);
 }
 
 pub fn spawn_settings_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -142,6 +143,7 @@ pub fn handle_menu_buttons(
                     MenuButtonAction::Play => next_state.set(GameState::InGame),
                     MenuButtonAction::Settings => next_state.set(GameState::Settings),
                     MenuButtonAction::Back => next_state.set(GameState::MainMenu),
+                    MenuButtonAction::Secret => next_state.set(GameState::SecretScene),
                 }
             }
             Interaction::Hovered => {
