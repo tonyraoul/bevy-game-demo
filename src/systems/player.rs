@@ -43,7 +43,7 @@ pub fn player_movement(
             
             // Smooth acceleration
             let acceleration = if boost.is_boosting {
-                BASE_MOVEMENT_FORCE * 3.5  // Enhanced boost acceleration
+                BASE_MOVEMENT_FORCE * 5.0  // Enhanced boost acceleration
             } else {
                 BASE_MOVEMENT_FORCE * 1.2  // Smoother base acceleration
             };
