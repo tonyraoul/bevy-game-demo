@@ -1,7 +1,7 @@
 use bevy::{app::AppExit, prelude::*};
 
 use crate::{
-    components::{MainMenu, MenuButton, MenuButtonAction},
+    components::{MainMenu, MenuButton, MenuButtonAction, SettingsMenu},
     styles::*,
     states::GameState,
 };
@@ -53,6 +53,52 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     spawn_menu_button(&mut commands, &asset_server, "Quit", MenuButtonAction::Quit, main_menu);
 }
 
+pub fn spawn_settings_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // Camera
+    commands.spawn(Camera2dBundle::default());
+
+    let settings_menu = commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    flex_direction: FlexDirection::Column,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    row_gap: Val::Px(20.0),
+                    ..default()
+                },
+                background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                ..default()
+            },
+            SettingsMenu,
+        ))
+        .id();
+
+    // Title
+    commands.spawn(NodeBundle {
+        style: Style {
+            flex_direction: FlexDirection::Row,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            width: Val::Px(300.0),
+            height: Val::Px(120.0),
+            ..default()
+        },
+        ..default()
+    }).with_children(|parent| {
+        parent.spawn(TextBundle {
+            text: Text::from_section("Settings", get_title_text_style(&asset_server)),
+            ..default()
+        });
+    }).set_parent(settings_menu);
+
+    // Buttons
+    spawn_menu_button(&mut commands, &asset_server, "Back", MenuButtonAction::Back, settings_menu);
+}
+
+
 fn spawn_menu_button(
     commands: &mut Commands,
     asset_server: &AssetServer,
@@ -95,6 +141,7 @@ pub fn handle_menu_buttons(
                     MenuButtonAction::Quit => app_exit_events.send(AppExit),
                     MenuButtonAction::Play => next_state.set(GameState::InGame),
                     MenuButtonAction::Settings => next_state.set(GameState::Settings),
+                    MenuButtonAction::Back => next_state.set(GameState::MainMenu),
                 }
             }
             Interaction::Hovered => {
@@ -109,7 +156,7 @@ pub fn handle_menu_buttons(
 
 pub fn cleanup_menu(
     mut commands: Commands,
-    menu_query: Query<Entity, With<MainMenu>>,
+    menu_query: Query<Entity, Or<(With<MainMenu>, With<SettingsMenu>)>>,
     camera_query: Query<Entity, With<Camera>>,
 ) {
     for entity in menu_query.iter() {
@@ -119,4 +166,4 @@ pub fn cleanup_menu(
     for entity in camera_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-} 
+}

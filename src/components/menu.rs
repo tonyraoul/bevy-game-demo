@@ -4,6 +4,9 @@ use bevy::prelude::*;
 pub struct MainMenu;
 
 #[derive(Component, Debug, Clone, PartialEq)]
+pub struct SettingsMenu;
+
+#[derive(Component, Debug, Clone, PartialEq)]
 pub struct MenuButton {
     pub action: MenuButtonAction,
 }
@@ -13,4 +16,5 @@ pub enum MenuButtonAction {
     Play,
     Settings,
     Quit,
-} 
+    Back,
+}
