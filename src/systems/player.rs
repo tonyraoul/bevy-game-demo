@@ -8,10 +8,10 @@ const FALL_THRESHOLD: f32 = -5.0;
 const SPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
 
 // Physics constants
-const BASE_MOVEMENT_FORCE: f32 = 20.0;
+const BASE_MOVEMENT_FORCE: f32 = 25.0;
 const MAX_SPEED: f32 = 8.0;
 const BOOST_MAX_SPEED: f32 = 15.0;  // Higher max speed when boosting
-const FRICTION: f32 = 0.95;
+const FRICTION: f32 = 0.9;
 const PUSH_FORCE: f32 = 10.0;
 const FALL_ACCELERATION: f32 = 30.0;  // Additional downward force when falling
 

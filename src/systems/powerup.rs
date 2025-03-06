@@ -66,12 +66,12 @@ pub fn spawn_random_powerup_coin(
     // Count existing powerups
     let existing_powerups = powerup_query.iter().count();
 
-    // Initialize timer if not set
-    if spawn_timer.is_none() {
-        let mut rng = rand::thread_rng();
-        let duration = rng.gen_range(4.0..=8.0);
-        *spawn_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
-    }
+        // Initialize timer if not set
+        if spawn_timer.is_none() {
+            let mut rng = rand::thread_rng();
+            let duration = rng.gen_range(2.0..=6.0);
+            *spawn_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
+        }
 
     // Tick the timer
     if let Some(timer) = spawn_timer.as_mut() {

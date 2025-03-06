@@ -15,10 +15,10 @@ const FALL_THRESHOLD: f32 = -5.0;
 const RESPAWN_POSITION: Vec3 = Vec3::new(0.0, PLATFORM_HEIGHT + 2.0, 0.0);
 
 // Physics constants
-const BASE_MOVEMENT_FORCE: f32 = 15.0;
-const MAX_SPEED: f32 = 6.0;
+const BASE_MOVEMENT_FORCE: f32 = 18.0;
+const MAX_SPEED: f32 = 7.0;
 const FRICTION: f32 = 0.95;
-const CHASE_DISTANCE: f32 = 10.0;
+const CHASE_DISTANCE: f32 = 8.0;
 const FALL_ACCELERATION: f32 = 30.0;  // Additional downward force when falling
 
 pub fn spawn_enemies(
