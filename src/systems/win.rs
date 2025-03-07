@@ -29,7 +29,7 @@ pub fn spawn_win_screen(
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgba(0.0, 0.0, 0.0, 0.7).into(),
+            background_color: Color::rgb(0.96, 0.96, 0.86).into(),
             ..default()
         },
         // Add a component to help with cleanup
@@ -57,7 +57,7 @@ pub fn spawn_win_screen(
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                background_color: Color::rgb(0.2, 0.7, 0.2).into(),
+                background_color: Color::rgb(0.56, 0.93, 0.56).into(),
                 ..default()
             },
             RestartButton,

@@ -32,7 +32,7 @@ fn setup_settings(mut commands: Commands) {
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgb(0.15, 0.15, 0.15).into(),
+            background_color: Color::rgb(0.96, 0.96, 0.86).into(),
             ..default()
         },
         SettingsMenu,
@@ -63,4 +63,4 @@ fn cleanup_settings(
     for entity in camera_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
-} 
+}

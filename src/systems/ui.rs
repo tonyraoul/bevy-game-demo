@@ -88,7 +88,7 @@ pub fn spawn_hud(mut commands: Commands) {
                             height: Val::Px(20.0),
                             ..default()
                         },
-                        background_color: Color::rgb(0.2, 0.2, 0.2).into(),
+                        background_color: Color::rgb(0.96, 0.96, 0.86).into(),
                         ..default()
                     })
                     .with_children(|parent| {
@@ -100,7 +100,7 @@ pub fn spawn_hud(mut commands: Commands) {
                                     height: Val::Percent(100.0),
                                     ..default()
                                 },
-                                background_color: Color::rgb(1.0, 0.5, 0.0).into(),
+                                background_color: Color::rgb(0.68, 0.85, 0.90).into(),
                                 ..default()
                             }
                         ).insert(BoostIndicator);

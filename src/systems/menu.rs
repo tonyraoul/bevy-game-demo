@@ -22,7 +22,7 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     row_gap: Val::Px(20.0),
                     ..default()
                 },
-                background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                background_color: Color::rgb(0.96, 0.96, 0.86).into(),
                 ..default()
             },
             MainMenu,
@@ -70,7 +70,7 @@ pub fn spawn_settings_menu(mut commands: Commands, asset_server: Res<AssetServer
                     row_gap: Val::Px(20.0),
                     ..default()
                 },
-                background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                background_color: Color::rgb(0.96, 0.96, 0.86).into(),
                 ..default()
             },
             SettingsMenu,
