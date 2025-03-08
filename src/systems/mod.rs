@@ -8,6 +8,7 @@ mod gameover;
 mod pause;
 mod powerup;
 mod win;
+mod camera;
 
 pub use menu::*;
 pub use player::*;
@@ -18,6 +19,7 @@ pub use gameover::*;
 pub use pause::*;
 pub use powerup::*;
 pub use win::*;
+pub use camera::*;
 
 use bevy::prelude::*;
 

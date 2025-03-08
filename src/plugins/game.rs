@@ -30,6 +30,7 @@ use crate::systems::{
     cleanup_win_screen,
     handle_win_screen_input,
     update_score_text,
+    update_camera_position,
 };
 
 pub struct GamePlugin;
@@ -85,6 +86,7 @@ impl Plugin for GamePlugin {
                 check_fall,
                 handle_enemy_falls,
                 update_score_text.after(handle_enemy_falls),
+                update_camera_position,
                 apply_powerup_effects,
                 spawn_random_powerup_coin,
                 collect_powerup_coin,
