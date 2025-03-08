@@ -7,10 +7,15 @@ pub fn check_win_condition(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     // Check if all enemies have been defeated (score <= 0)
-    let all_enemies_defeated = enemy_query.iter()
+    let enemies: Vec<&Enemy> = enemy_query.iter().collect();
+    let all_enemies_defeated = enemies.iter()
         .all(|enemy| enemy.is_fallen);
 
+    println!("Total enemies: {}", enemies.len());
+    println!("Fallen enemies: {}", enemies.iter().filter(|e| e.is_fallen).count());
+
     if all_enemies_defeated {
+        println!("All enemies defeated - transitioning to WinScreen");
         next_state.set(GameState::WinScreen);
     }
 }
@@ -18,7 +23,18 @@ pub fn check_win_condition(
 pub fn spawn_win_screen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    camera_query: Query<Entity, With<Camera>>,
 ) {
+    println!("Spawning win screen");
+
+    // Despawn existing cameras
+    for camera_entity in camera_query.iter() {
+        commands.entity(camera_entity).despawn();
+    }
+
+    // Spawn 2D camera for UI
+    commands.spawn(Camera2dBundle::default());
+
     commands.spawn((
         NodeBundle {
             style: Style {
@@ -29,7 +45,7 @@ pub fn spawn_win_screen(
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgb(0.96, 0.96, 0.86).into(),
+            background_color: Color::rgba(0.96, 0.96, 0.86, 1.0).into(), // Ensure full opacity
             ..default()
         },
         // Add a component to help with cleanup
@@ -42,7 +58,7 @@ pub fn spawn_win_screen(
             TextStyle {
                 font: asset_server.load("fonts/MouldyCheeseRegular-WyMWG.ttf"),
                 font_size: 80.0,
-                color: Color::WHITE,
+                color: Color::BLACK, // Change to black for better visibility
             }
         ));
 
@@ -68,7 +84,7 @@ pub fn spawn_win_screen(
                 TextStyle {
                     font: asset_server.load("fonts/MouldyCheeseRegular-WyMWG.ttf"),
                     font_size: 40.0,
-                    color: Color::WHITE,
+                    color: Color::WHITE, // Change to black for better visibility
                 }
             ));
         });
