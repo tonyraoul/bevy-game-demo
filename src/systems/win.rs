@@ -45,7 +45,7 @@ pub fn spawn_win_screen(
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgba(0.96, 0.96, 0.86, 1.0).into(), // Ensure full opacity
+            background_color: Color::rgba(0.85, 0.85, 0.75, 1.0).into(), // Slightly darker background
             ..default()
         },
         // Add a component to help with cleanup
@@ -84,7 +84,7 @@ pub fn spawn_win_screen(
                 TextStyle {
                     font: asset_server.load("fonts/MouldyCheeseRegular-WyMWG.ttf"),
                     font_size: 40.0,
-                    color: Color::WHITE, // Change to black for better visibility
+                    color: Color::BLACK, // Change to black for better visibility
                 }
             ));
         });
