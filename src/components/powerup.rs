@@ -8,6 +8,7 @@ pub enum PowerUpType {
 
 #[derive(Component)]
 pub struct PowerUp {
+    /// Type of powerup used in powerup application logic
     pub power_type: PowerUpType,
     pub duration: Timer,
 }

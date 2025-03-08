@@ -2,6 +2,8 @@ use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Player {
+    /// Speed used for player initialization and potential future movement mechanics
+    #[allow(dead_code)]
     pub speed: f32,
     pub base_scale: Vec3,
     pub current_scale: Vec3,

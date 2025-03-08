@@ -135,6 +135,8 @@ pub fn update_score_text(
     }
 }
 
+/// Cleans up the game HUD, typically used during state transitions
+/// Removes all entities associated with the game HUD
 pub fn cleanup_hud(mut commands: Commands, hud_query: Query<Entity, With<GameHud>>) {
     for entity in hud_query.iter() {
         commands.entity(entity).despawn_recursive();

@@ -24,7 +24,10 @@ pub use camera::*;
 use bevy::prelude::*;
 
 // Create a system set for common game mechanics
+/// System set for organizing and configuring game mechanics systems
+/// Even though variants appear unused, they are used for system configuration
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+#[allow(dead_code)]
 pub enum GameMechanicsSet {
     Movement,
     EnemyBehavior,

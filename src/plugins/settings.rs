@@ -40,8 +40,8 @@ fn setup_settings(mut commands: Commands) {
 }
 
 pub fn handle_settings(
-    keys: ResMut<Input<KeyCode>>,
-    mut settings: ResMut<GameSettings>,
+    keys: Res<Input<KeyCode>>,
+    _settings: ResMut<GameSettings>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     if keys.just_pressed(KeyCode::Escape) {

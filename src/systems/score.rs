@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use crate::components::{BearScore, ScoreText};
 
+/// Updates the score text display during gameplay
+/// Called in the game plugin's update systems
 pub fn update_score_text(
     mut text_query: Query<&mut Text, With<ScoreText>>,
     score_query: Query<(&BearScore, &Transform)>,
