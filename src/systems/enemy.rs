@@ -76,7 +76,6 @@ pub fn handle_enemy_falls(
 
         // Check if enemy has fallen
         if transform.translation.y < FALL_THRESHOLD && !enemy.is_fallen {
-            println!("Enemy {} has fallen! Position: {:?}", score.name, transform.translation);
             // Enemy has fallen
             enemy.is_fallen = true;
             enemy.state = EnemyState::Fallen;
@@ -92,7 +91,6 @@ pub fn handle_enemy_falls(
         // Handle respawn timer for fallen enemies
         if enemy.is_fallen {
             if enemy.respawn_timer.tick(time.delta()).finished() {
-                println!("Enemy {} respawning!", score.name);
                 // Respawn the enemy
                 enemy.is_fallen = false;
                 enemy.state = EnemyState::Patrol;

@@ -6,14 +6,7 @@ use crate::{
     states::GameState,
 };
 
-// Debug print to verify the system is running
-fn debug_print(message: &str) {
-    println!("[GameOver System] {}", message);
-}
-
 pub fn spawn_game_over_screen(mut commands: Commands, asset_server: Res<AssetServer>, score_query: Query<&BearScore>) {
-    debug_print("Spawning game over screen");
-    
     // Find the player's score
     let mut player_score = 0;
     let mut player_name = "Player".to_string();
@@ -22,7 +15,6 @@ pub fn spawn_game_over_screen(mut commands: Commands, asset_server: Res<AssetSer
         if score.name == "Player" {
             player_score = score.value;
             player_name = score.name.clone();
-            debug_print(&format!("Found player score: {}", player_score));
             break;
         }
     }
@@ -133,29 +125,22 @@ pub fn handle_game_over_input(
     score_query: Query<Entity, With<BearScore>>,
     boost_indicator_query: Query<Entity, With<BoostIndicator>>,
 ) {
-    debug_print("Handling game over input");
-    
     for (interaction, mut color, button) in button_query.iter_mut() {
         match *interaction {
             Interaction::Pressed => {
                 *color = PRESSED_BUTTON_COLOR.into();
                 match button.action {
                     GameOverButtonAction::Restart => {
-                        debug_print("Restart button pressed");
                         next_state.set(GameState::InGame);
                     },
                     GameOverButtonAction::MainMenu => {
-                        debug_print("Main Menu button pressed");
-                        
                         // Clean up score entities
                         for entity in score_query.iter() {
-                            debug_print(&format!("Despawning score entity: {:?}", entity));
                             commands.entity(entity).despawn_recursive();
                         }
                         
                         // Clean up boost indicator entities
                         for entity in boost_indicator_query.iter() {
-                            debug_print(&format!("Despawning boost indicator entity: {:?}", entity));
                             commands.entity(entity).despawn_recursive();
                         }
                         
@@ -177,12 +162,7 @@ pub fn cleanup_game_over(
     mut commands: Commands,
     game_over_query: Query<Entity, With<GameOverScreen>>,
 ) {
-    debug_print("Cleaning up game over screen");
-    
     for entity in game_over_query.iter() {
-        debug_print(&format!("Despawning game over entity: {:?}", entity));
         commands.entity(entity).despawn_recursive();
     }
-    
-    debug_print("Game over cleanup complete");
 }

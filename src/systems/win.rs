@@ -11,11 +11,7 @@ pub fn check_win_condition(
     let all_enemies_defeated = enemies.iter()
         .all(|enemy| enemy.is_fallen);
 
-    println!("Total enemies: {}", enemies.len());
-    println!("Fallen enemies: {}", enemies.iter().filter(|e| e.is_fallen).count());
-
     if all_enemies_defeated {
-        println!("All enemies defeated - transitioning to WinScreen");
         next_state.set(GameState::WinScreen);
     }
 }
@@ -25,8 +21,6 @@ pub fn spawn_win_screen(
     asset_server: Res<AssetServer>,
     camera_query: Query<Entity, With<Camera>>,
 ) {
-    println!("Spawning win screen");
-
     // Despawn existing cameras
     for camera_entity in camera_query.iter() {
         commands.entity(camera_entity).despawn();

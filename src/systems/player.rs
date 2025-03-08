@@ -121,7 +121,6 @@ pub fn check_fall(
             // Check if player has lost all points
             if score.value <= 0 {
                 // Trigger game over
-                println!("[Player System] Triggering GameOver state, player score: {}", score.value);
                 next_state.set(GameState::GameOver);
                 return;
             }
