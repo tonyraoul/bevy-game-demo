@@ -14,18 +14,19 @@ pub fn get_button_style() -> Style {
     }
 }
 
-pub fn get_title_text_style(_asset_server: &AssetServer) -> TextStyle {
+pub fn get_title_text_style(asset_server: &AssetServer) -> TextStyle {
     TextStyle {
+        font: asset_server.load("fonts/MouldyCheeseRegular-WyMWG.ttf"),
         font_size: 64.0,
         color: Color::WHITE,
         ..default()
     }
 }
 
-pub fn get_button_text_style(_asset_server: &AssetServer) -> TextStyle {
+pub fn get_button_text_style(asset_server: &AssetServer) -> TextStyle {
     TextStyle {
+        font: asset_server.load("fonts/MouldyCheeseRegular-WyMWG.ttf"),
         font_size: 32.0,
         color: Color::WHITE,
-        ..default()
     }
 }

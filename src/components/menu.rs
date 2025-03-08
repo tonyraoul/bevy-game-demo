@@ -18,4 +18,5 @@ pub enum MenuButtonAction {
     Quit,
     Back,
     Secret,
+    TestWin,
 }
