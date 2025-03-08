@@ -5,15 +5,15 @@ use crate::states::GameState;
 use crate::components::{GameSettings, PauseState};
 use crate::systems::{
     player_movement,
-    enemy_behavior,
     check_fall,
+    enemy_behavior,
     handle_enemy_falls,
+    spawn_enemies,
     handle_boost,
     handle_ai_boost,
     update_boost_indicator,
     spawn_player,
     spawn_hud,
-    spawn_enemies,
     spawn_game_over_screen,
     handle_game_over_input,
     cleanup_game_over,
@@ -29,8 +29,8 @@ use crate::systems::{
     spawn_win_screen,
     cleanup_win_screen,
     handle_win_screen_input,
+    update_score_text,
 };
-use crate::systems::score::update_score_text;
 
 pub struct GamePlugin;
 
@@ -135,9 +135,15 @@ fn setup_game(
     });
 
     // Platform
+    let platform_radius = 10.0;
+    let platform_height = 1.0;
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(shape::Box::new(20.0, 1.0, 20.0).into()),
+            mesh: meshes.add(shape::Cylinder {
+                radius: platform_radius,
+                height: platform_height,
+                ..default()
+            }.into()),
             material: materials.add(StandardMaterial {
                 base_color: Color::rgb(0.3, 0.5, 0.3),
                 ..default()
@@ -146,14 +152,18 @@ fn setup_game(
             ..default()
         },
         RigidBody::Fixed,
-        Collider::cuboid(10.0, 0.5, 10.0),
+        Collider::cylinder(platform_height / 2.0, platform_radius),
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
 
     // Platform edge highlight
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(shape::Box::new(20.2, 0.2, 20.2).into()),
+            mesh: meshes.add(shape::Cylinder {
+                radius: platform_radius + 0.1,
+                height: 0.2,
+                ..default()
+            }.into()),
             material: materials.add(StandardMaterial {
                 base_color: Color::rgb(0.8, 0.6, 0.2),
                 ..default()
@@ -162,7 +172,7 @@ fn setup_game(
             ..default()
         },
         RigidBody::Fixed,
-        Collider::cuboid(10.1, 0.1, 10.1),
+        Collider::cylinder(0.1, platform_radius + 0.1),
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
 }

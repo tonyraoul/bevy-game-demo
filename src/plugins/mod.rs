@@ -2,6 +2,6 @@ mod menu;
 mod game;
 mod settings;
 
-pub use menu::*;
-pub use game::*;
-pub use settings::*; 
+pub use menu::MenuPlugin;
+pub use game::{GamePlugin, *};
+pub use settings::SettingsPlugin;
