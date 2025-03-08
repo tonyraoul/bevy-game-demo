@@ -24,17 +24,24 @@ pub fn player_movement(
         let mut direction = Vec3::ZERO;
 
         // Diagonal movement handling with normalized speed
-        if keyboard_input.pressed(KeyCode::W) {
-            direction.z -= 1.0;
+        if !boost.is_boosting {
+            if keyboard_input.pressed(KeyCode::W) {
+                direction.z -= 1.0;
+            }
+            if keyboard_input.pressed(KeyCode::S) {
+                direction.z += 1.0;
+            }
+            if keyboard_input.pressed(KeyCode::A) {
+                direction.x -= 1.0;
+            }
+            if keyboard_input.pressed(KeyCode::D) {
+                direction.x += 1.0;
+            }
         }
-        if keyboard_input.pressed(KeyCode::S) {
-            direction.z += 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::A) {
-            direction.x -= 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::D) {
-            direction.x += 1.0;
+
+        if boost.is_boosting {
+            // Always push forward when boosting (negative Z direction)
+            direction = Vec3::new(0.0, 0.0, -1.0);
         }
 
         if direction != Vec3::ZERO {
