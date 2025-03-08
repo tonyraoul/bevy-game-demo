@@ -4,10 +4,12 @@ use crate::components::{Player, Enemy};
 pub fn update_camera_position(
     mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>, Without<Enemy>)>,
     entity_query: Query<&GlobalTransform, Or<(With<Player>, With<Enemy>)>>,
+    time: Res<Time>,
 ) {
     // Platform height where entities should be considered
     const PLATFORM_HEIGHT: f32 = 5.0;
     const PLATFORM_TOLERANCE: f32 = 2.0;
+    const CAMERA_SMOOTHING: f32 = 0.001; // Lower value means slower camera movement
 
     // If no camera or no entities, do nothing
     if camera_query.is_empty() || entity_query.is_empty() {
@@ -41,12 +43,18 @@ pub fn update_camera_position(
     let camera_distance = max_distance.max(10.0) + 15.0;
 
     if let Ok(mut camera_transform) = camera_query.get_single_mut() {
-        // Position camera above the center point, looking down
-        camera_transform.translation = Vec3::new(
+        // Smoothly interpolate camera position
+        let target_translation = Vec3::new(
             center.x, 
             camera_height, 
             center.z + camera_distance
         );
+        
+        camera_transform.translation = camera_transform.translation.lerp(
+            target_translation, 
+            time.delta_seconds() * CAMERA_SMOOTHING
+        );
+        
         camera_transform.look_at(center, Vec3::Y);
     }
 }
