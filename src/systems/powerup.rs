@@ -1,13 +1,12 @@
 use bevy::prelude::*;
-// Removed unused import
 use bevy_rapier3d::prelude::*;
 use rand::Rng;
 use crate::components::{
-    Player, 
-    PowerUp, 
-    PowerUpType, 
+    Player,
+    PowerUp,
+    PowerUpType,
     ActivePowerUp,
-    Enemy
+    Enemy,
 };
 
 #[derive(Component)]
@@ -16,6 +15,7 @@ pub struct PowerUpCoin {
     pub lifetime: Timer,
 }
 
+/// Applies active powerup effects to the player.
 pub fn apply_powerup_effects(
     time: Res<Time>,
     mut query: Query<(&mut Transform, &mut Player, &mut ActivePowerUp)>,
@@ -24,30 +24,23 @@ pub fn apply_powerup_effects(
         // Handle grow powerup
         if let Some(grow) = &mut active_powerup.grow {
             grow.duration.tick(time.delta());
-            
             if grow.duration.finished() {
-                // Reset to base scale when grow powerup expires
                 player.current_scale = player.base_scale;
                 transform.scale = player.current_scale;
                 active_powerup.grow = None;
             } else {
-                // Apply grow effect (increase scale)
                 player.current_scale = player.base_scale * 1.5;
                 transform.scale = player.current_scale;
             }
         }
-
         // Handle shrink powerup
         if let Some(shrink) = &mut active_powerup.shrink {
             shrink.duration.tick(time.delta());
-            
             if shrink.duration.finished() {
-                // Reset to base scale when shrink powerup expires
                 player.current_scale = player.base_scale;
                 transform.scale = player.current_scale;
                 active_powerup.shrink = None;
             } else {
-                // Apply shrink effect (decrease scale)
                 player.current_scale = player.base_scale * 0.5;
                 transform.scale = player.current_scale;
             }
@@ -55,6 +48,7 @@ pub fn apply_powerup_effects(
     }
 }
 
+/// Spawns a powerup coin randomly above the platform when fewer than two exist.
 pub fn spawn_random_powerup_coin(
     mut commands: Commands,
     time: Res<Time>,
@@ -63,52 +57,45 @@ pub fn spawn_random_powerup_coin(
     mut spawn_timer: Local<Option<Timer>>,
     powerup_query: Query<&PowerUpCoin>,
 ) {
-    // Count existing powerups
     let existing_powerups = powerup_query.iter().count();
+    // Initialize spawn timer if it's not already set.
+    if spawn_timer.is_none() {
+        let duration = rand::thread_rng().gen_range(2.0..=6.0);
+        *spawn_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
+    }
 
-        // Initialize timer if not set
-        if spawn_timer.is_none() {
-            let mut rng = rand::thread_rng();
-            let duration = rng.gen_range(2.0..=6.0);
-            *spawn_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
-        }
-
-    // Tick the timer
     if let Some(timer) = spawn_timer.as_mut() {
         timer.tick(time.delta());
-
-        // When timer finishes and fewer than 2 powerups exist, spawn a powerup coin
         if timer.finished() && existing_powerups < 2 {
             let mut rng = rand::thread_rng();
-            let power_type = if rng.gen_bool(0.5) { 
-                PowerUpType::Grow 
-            } else { 
-                PowerUpType::Shrink 
+            let power_type = if rng.gen_bool(0.5) {
+                PowerUpType::Grow
+            } else {
+                PowerUpType::Shrink
             };
-
-            // Spawn coin at a random position (adjust the range as needed)
+            // Spawn coin at a random position above the platform.
             let x = rng.gen_range(-5.0..5.0);
             let y = rng.gen_range(-5.0..5.0);
-
             commands.spawn((
                 PbrBundle {
                     mesh: meshes.add(shape::Box::new(0.5, 0.5, 0.5).into()),
                     material: materials.add(StandardMaterial {
                         base_color: match power_type {
-                            PowerUpType::Grow => Color::rgb(1.0, 0.8, 0.0),  // Gold for grow
-                            PowerUpType::Shrink => Color::rgb(0.0, 0.8, 1.0), // Blue for shrink
+                            PowerUpType::Grow => Color::rgb(1.0, 0.8, 0.0),
+                            PowerUpType::Shrink => Color::rgb(0.0, 0.8, 1.0),
                         },
                         metallic: 1.0,
                         perceptual_roughness: 0.1,
                         ..default()
                     }),
-                    transform: Transform::from_xyz(x, 6.0, y), // Spawn above the platform
+                    transform: Transform::from_xyz(x, 6.0, y),
                     ..default()
                 },
                 PowerUpCoin {
                     power_type,
-                    lifetime: Timer::from_seconds(10.0, TimerMode::Once), // Powerup disappears after 10 seconds
+                    lifetime: Timer::from_seconds(10.0, TimerMode::Once),
                 },
+                // Set the coin to be fixed so it doesn't fall.
                 RigidBody::Fixed,
                 Collider::cuboid(0.25, 0.25, 0.25),
                 CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),
@@ -116,13 +103,14 @@ pub fn spawn_random_powerup_coin(
                 Sensor,
             ));
 
-            // Reset timer with a new random duration
+            // Reset timer with a new random duration.
             let duration = rng.gen_range(4.0..=8.0);
             *spawn_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
         }
     }
 }
 
+/// Handles collision events to collect powerup coins.
 pub fn collect_powerup_coin(
     mut commands: Commands,
     mut player_query: Query<&mut ActivePowerUp, With<Player>>,
@@ -130,7 +118,6 @@ pub fn collect_powerup_coin(
     coin_query: Query<(Entity, &PowerUpCoin)>,
     mut collision_events: EventReader<CollisionEvent>,
 ) {
-    // Collect entities to process outside of the event iteration
     let mut coins_to_despawn = Vec::new();
     let mut powerup_to_apply = None;
 
@@ -154,33 +141,33 @@ pub fn collect_powerup_coin(
         }
     }
 
-    // Despawn coins
     for coin_entity in coins_to_despawn {
         commands.entity(coin_entity).despawn();
     }
 
-    // Apply powerup to player if applicable
     if let Some(power_type) = powerup_to_apply {
         let mut active_powerup = player_query.single_mut();
         apply_powerup_effect(&mut active_powerup, power_type);
     }
 }
 
+/// Applies the powerup effect to the player's active powerup state.
 fn apply_powerup_effect(active_powerup: &mut ActivePowerUp, power_type: PowerUpType) {
     match power_type {
         PowerUpType::Grow => {
             if active_powerup.grow.is_none() {
-                active_powerup.grow = Some(PowerUp::new(PowerUpType::Grow, 2.0));
+                active_powerup.grow = Some(PowerUp::new(PowerUpType::Grow, 6.0));
             }
         },
         PowerUpType::Shrink => {
             if active_powerup.shrink.is_none() {
-                active_powerup.shrink = Some(PowerUp::new(PowerUpType::Shrink, 2.0));
+                active_powerup.shrink = Some(PowerUp::new(PowerUpType::Shrink, 6.0));
             }
-        }
+        },
     }
 }
 
+/// Removes expired powerup coins.
 pub fn remove_expired_powerup_coins(
     mut commands: Commands,
     time: Res<Time>,
