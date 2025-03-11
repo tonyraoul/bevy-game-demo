@@ -109,9 +109,11 @@ pub fn spawn_random_powerup_coin(
                     power_type,
                     lifetime: Timer::from_seconds(10.0, TimerMode::Once), // Powerup disappears after 10 seconds
                 },
-                RigidBody::Dynamic,
+                RigidBody::Fixed,
                 Collider::cuboid(0.25, 0.25, 0.25),
                 CollisionGroups::new(Group::GROUP_2, Group::GROUP_1 | Group::GROUP_2),
+                ActiveEvents::COLLISION_EVENTS,
+                Sensor,
             ));
 
             // Reset timer with a new random duration
@@ -134,25 +136,18 @@ pub fn collect_powerup_coin(
 
     for collision_event in collision_events.read() {
         if let CollisionEvent::Started(e1, e2, _) = collision_event {
-            // Check if one entity is a powerup coin
-            if let Ok((coin_entity, coin)) = coin_query.get(*e1) {
-                // Check if coin hit player or enemy
-                if enemy_query.get(*e2).is_ok() {
-                    // Mark coin for despawn if hit enemy
-                    coins_to_despawn.push(coin_entity);
-                } else if player_query.get(*e2).is_ok() {
-                    // Mark coin for despawn and powerup for application if hit player
-                    coins_to_despawn.push(coin_entity);
-                    powerup_to_apply = Some(coin.power_type);
-                }
-            } else if let Ok((coin_entity, coin)) = coin_query.get(*e2) {
-                // Check if coin hit player or enemy
-                if enemy_query.get(*e1).is_ok() {
-                    // Mark coin for despawn if hit enemy
-                    coins_to_despawn.push(coin_entity);
-                } else if player_query.get(*e1).is_ok() {
-                    // Mark coin for despawn and powerup for application if hit player
-                    coins_to_despawn.push(coin_entity);
+            let (coin_entity, coin) = if let Ok((entity, coin)) = coin_query.get(*e1) {
+                (entity, coin)
+            } else if let Ok((entity, coin)) = coin_query.get(*e2) {
+                (entity, coin)
+            } else {
+                continue;
+            };
+
+            let other_entity = if coin_entity == *e1 { *e2 } else { *e1 };
+            if enemy_query.get(other_entity).is_ok() || player_query.get(other_entity).is_ok() {
+                coins_to_despawn.push(coin_entity);
+                if player_query.get(other_entity).is_ok() {
                     powerup_to_apply = Some(coin.power_type);
                 }
             }
