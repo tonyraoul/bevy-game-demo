@@ -1,3 +1,6 @@
+### Disclaimer
+This repository is AI generated using claude 3.5 - haiku model.
+
 # Bevy Bear Balance
 
 A charming 3D platformer game built with the Bevy game engine and Rust, where you control a cute 4-legged bear trying to maintain balance on a floating platform while competing with other bears.
