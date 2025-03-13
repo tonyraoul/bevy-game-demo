@@ -3,6 +3,7 @@ use bevy::time::Timer;
 use rand::Rng;
 
 pub const PLATFORM_HEIGHT: f32 = 5.0;
+pub const WEAK_THRESHOLD: f32 = 30.0;
 
 #[derive(Component, Default)]
 pub struct Enemy {
@@ -11,6 +12,9 @@ pub struct Enemy {
     pub state_timer: Timer,
     pub is_fallen: bool,
     pub respawn_timer: Timer,
+    pub health: f32,
+    pub target: Option<Entity>,
+    pub target_timer: Timer, // Add target_timer field
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Default)]
@@ -29,6 +33,9 @@ impl Enemy {
             state_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
             is_fallen: false,
             respawn_timer: Timer::from_seconds(3.0, TimerMode::Once),
+            health: 100.0,
+            target: None,
+            target_timer: Timer::from_seconds(2.0, TimerMode::Repeating), // Initialize with a default value
         }
     }
 
@@ -38,4 +45,8 @@ impl Enemy {
         let z = rng.gen_range(-8.0..8.0);
         Vec3::new(x, PLATFORM_HEIGHT + 2.0, z)
     }
-} 
+
+    pub fn is_weak(&self) -> bool {
+        self.health <= WEAK_THRESHOLD
+    }
+}
