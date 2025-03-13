@@ -30,8 +30,11 @@ pub fn spawn_enemies(
             &mut materials,
             CompoundSphereParams {
                 base_radius: 0.5,
-                head_radius: 0.3,
-                head_offset: Vec3::new(0.0, 0.6, 0.0),
+                head_radius: 0.4,
+                ear_radius: 0.15,
+                head_offset: Vec3::new(0.0, 0.7, 0.0),
+                left_ear_offset: Vec3::new(-0.25, 0.3, 0.0),
+                right_ear_offset: Vec3::new(0.25, 0.3, 0.0),
                 base_color: Color::rgb(0.8, 0.2, 0.2),
                 position: Vec3::new(*x, PLATFORM_HEIGHT + 2.0, *z),
                 is_player: false,

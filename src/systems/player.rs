@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore};
+use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore, CompoundSphereParams, spawn_compound_sphere};
 use crate::states::GameState;
 
 const FALL_THRESHOLD: f32 = -5.0;
@@ -143,56 +143,29 @@ pub fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-        // Create a compound mesh with two spheres
-        let mut base_transform = Transform::from_translation(Vec3::new(0.0, 0.0, 0.0));
-        let mut head_transform = Transform::from_translation(Vec3::new(0.0, 0.6, 0.0));
-        
-        let base_mesh = shape::UVSphere {
-            radius: 0.5,
-            ..default()
-        };
-        
-        let head_mesh = shape::UVSphere {
-            radius: 0.3,
-            ..default()
-        };
-        
-        commands.spawn((            
-            PbrBundle {
-                mesh: meshes.add(base_mesh.into()),
-                material: materials.add(StandardMaterial {
-                    base_color: Color::rgb(0.2, 0.7, 0.2),
-                    ..default()
-                }),
-                transform: Transform::from_translation(SPAWN_POSITION),
-                ..default()
-            },
-            Player::new(8.0),
-            BearScore::new("Player".to_string()),
-            EnergyBoost::default(),
-            crate::components::ActivePowerUp::default(),
-            RigidBody::Dynamic,
-            Velocity::zero(),
-            Collider::compound(vec![
-                (Vec3::new(0.0, 0.0, 0.0), Quat::IDENTITY, Collider::ball(0.5)),
-                (Vec3::new(0.0, 0.6, 0.0), Quat::IDENTITY, Collider::ball(0.3)),
-            ]),
-            LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
-            Damping {
-                linear_damping: 0.1,
-                angular_damping: 0.5,
-            },
-            CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
-        )).with_children(|parent| {
-            // Add head sphere as a child
-            parent.spawn(PbrBundle {
-                mesh: meshes.add(head_mesh.into()),
-                material: materials.add(StandardMaterial {
-                    base_color: Color::rgb(0.2, 0.7, 0.2),
-                    ..default()
-                }),
-                transform: head_transform,
-                ..default()
-            });
-        });
+    let params = CompoundSphereParams {
+        base_radius: 0.5,
+        head_radius: 0.3,
+        ear_radius: 0.15,
+        head_offset: Vec3::new(0.0, 0.6, 0.0),
+        left_ear_offset: Vec3::new(-0.2, 0.2, 0.0),
+        right_ear_offset: Vec3::new(0.2, 0.2, 0.0),
+        base_color: Color::rgb(0.2, 0.7, 0.2),
+        position: SPAWN_POSITION,
+        is_player: true,
+    };
+
+    let entity = spawn_compound_sphere(
+        &mut commands,
+        &mut meshes,
+        &mut materials,
+        params,
+    );
+
+    commands.entity(entity).insert((
+        Player::new(8.0),
+        BearScore::new("Player".to_string()),
+        EnergyBoost::default(),
+        crate::components::ActivePowerUp::default(),
+    ));
 }

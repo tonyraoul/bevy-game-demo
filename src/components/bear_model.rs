@@ -4,7 +4,10 @@ use bevy_rapier3d::prelude::{Collider, CollisionGroups, Group, RigidBody, Veloci
 pub struct CompoundSphereParams {
     pub base_radius: f32,
     pub head_radius: f32,
+    pub ear_radius: f32,
     pub head_offset: Vec3,
+    pub left_ear_offset: Vec3,
+    pub right_ear_offset: Vec3,
     pub base_color: Color,
     pub position: Vec3,
     pub is_player: bool,
@@ -23,6 +26,11 @@ pub fn spawn_compound_sphere(
     
     let head_mesh = shape::UVSphere {
         radius: params.head_radius,
+        ..default()
+    };
+
+    let ear_mesh = shape::UVSphere {
+        radius: params.ear_radius,
         ..default()
     };
     
@@ -47,6 +55,8 @@ pub fn spawn_compound_sphere(
         Collider::compound(vec![
             (Vec3::ZERO, Quat::IDENTITY, Collider::ball(params.base_radius)),
             (params.head_offset, Quat::IDENTITY, Collider::ball(params.head_radius)),
+            (params.head_offset + params.left_ear_offset, Quat::IDENTITY, Collider::ball(params.ear_radius)),
+            (params.head_offset + params.right_ear_offset, Quat::IDENTITY, Collider::ball(params.ear_radius)),
         ]),
         LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
         Damping {
@@ -57,6 +67,7 @@ pub fn spawn_compound_sphere(
     )).id();
 
     commands.entity(entity).with_children(|parent| {
+        // Spawn head
         parent.spawn(PbrBundle {
             mesh: meshes.add(head_mesh.into()),
             material: materials.add(StandardMaterial {
@@ -64,6 +75,28 @@ pub fn spawn_compound_sphere(
                 ..default()
             }),
             transform: Transform::from_translation(params.head_offset),
+            ..default()
+        });
+
+        // Spawn left ear
+        parent.spawn(PbrBundle {
+            mesh: meshes.add(ear_mesh.clone().into()),
+            material: materials.add(StandardMaterial {
+                base_color: params.base_color,
+                ..default()
+            }),
+            transform: Transform::from_translation(params.head_offset + params.left_ear_offset),
+            ..default()
+        });
+
+        // Spawn right ear
+        parent.spawn(PbrBundle {
+            mesh: meshes.add(ear_mesh.into()),
+            material: materials.add(StandardMaterial {
+                base_color: params.base_color,
+                ..default()
+            }),
+            transform: Transform::from_translation(params.head_offset + params.right_ear_offset),
             ..default()
         });
     });
