@@ -32,7 +32,7 @@ fn setup_settings(mut commands: Commands) {
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: Color::rgb(0.96, 0.96, 0.86).into(),
+            background_color: Color::NONE.into(),
             ..default()
         },
         SettingsMenu,

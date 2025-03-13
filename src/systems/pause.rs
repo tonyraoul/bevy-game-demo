@@ -46,7 +46,7 @@ pub fn spawn_pause_menu(mut commands: Commands, asset_server: Res<AssetServer>) 
                     row_gap: Val::Px(20.0),
                     ..default()
                 },
-                background_color: Color::rgb(0.96, 0.96, 0.86).into(),
+                background_color: Color::NONE.into(),
                 ..default()
             },
             PauseMenu,

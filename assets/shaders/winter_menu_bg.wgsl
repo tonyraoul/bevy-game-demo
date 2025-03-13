@@ -28,7 +28,7 @@ fn random(st: vec2<f32>) -> f32 {
 }
 
 // Snowflake shape
-fn snowflake(uv: vec2<f32>, center: vec2<f32>, size: f32, seed: f32) -> f32 {
+fn snowflake(uv: vec2<f32>, center: vec2<f32>, size: f32, seed: f32) -> vec3<f32> {
     let dist = distance(uv, center);
     
     // Basic circle
@@ -45,8 +45,18 @@ fn snowflake(uv: vec2<f32>, center: vec2<f32>, size: f32, seed: f32) -> f32 {
     // Add inner detail
     shape *= 1.0 + 0.2 * sin(dist * 40.0 + time * 0.5);
     
-    return shape * smoothstep(size * 1.2, size * 0.8, dist);
+    let color = random_color(seed);
+    
+    return vec3<f32>(shape) * color * smoothstep(size * 1.2, size * 0.8, dist);
 }
+ 
+ // Function to generate a random color
+ fn random_color(seed: f32) -> vec3<f32> {
+     let r = fract(sin(seed * 12.9898) * 43758.5453);
+     let g = fract(sin((seed + 0.1) * 12.9898) * 43758.5453);
+     let b = fract(sin((seed + 0.2) * 12.9898) * 43758.5453);
+     return vec3<f32>(r, g, b);
+ }
 
 @fragment
 fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
@@ -76,7 +86,7 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
         let flake_pos = vec2<f32>(x_pos, y_pos);
         let flake_size = 0.02 + seed * 0.02;
         
-        snowflakes += snowflake(uv, flake_pos, flake_size, seed);
+        snowflakes += snowflake(uv, flake_pos, flake_size, seed).r;
     }
     
     // Medium snowflakes
@@ -90,7 +100,7 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
         let flake_pos = vec2<f32>(x_pos, y_pos);
         let flake_size = 0.01 + seed * 0.01;
         
-        snowflakes += snowflake(uv, flake_pos, flake_size, seed) * 0.7;
+        snowflakes += snowflake(uv, flake_pos, flake_size, seed).r * 0.7;
     }
     
     // Small background snowflakes/particles
@@ -120,10 +130,12 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
             random(vec2<f32>(seed * 1.5, seed * 0.3))
         );
         
-        let twinkle = sin(time * (2.0 + seed) + seed * 10.0) * 0.5 + 0.5;
+        // Use a more interesting twinkle effect
+        let twinkle = 0.5 + 0.5 * sin(time * (2.0 + seed) + seed * 10.0);
+        let star_color = random_color(seed * 5.0); // Different seed for star color
         let star = smoothstep(0.005, 0.0, distance(uv, star_pos)) * twinkle;
         
-        color += vec3<f32>(star * 0.7, star * 0.8, star);
+        color += star_color * star;
     }
     
     // Add a subtle vignette effect
