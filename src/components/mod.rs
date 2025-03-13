@@ -7,6 +7,8 @@ pub mod enemy;
 pub mod boost;
 pub mod score;
 pub mod powerup;
+pub mod shape;
+pub use shape::*;
 
 pub use menu::*;
 pub use player::*;

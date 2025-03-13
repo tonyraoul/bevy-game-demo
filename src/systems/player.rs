@@ -143,9 +143,23 @@ pub fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-        commands.spawn((
+        // Create a compound mesh with two spheres
+        let mut base_transform = Transform::from_translation(Vec3::new(0.0, 0.0, 0.0));
+        let mut head_transform = Transform::from_translation(Vec3::new(0.0, 0.6, 0.0));
+        
+        let base_mesh = shape::UVSphere {
+            radius: 0.5,
+            ..default()
+        };
+        
+        let head_mesh = shape::UVSphere {
+            radius: 0.3,
+            ..default()
+        };
+        
+        commands.spawn((            
             PbrBundle {
-                mesh: meshes.add(shape::Box::new(1.0, 1.0, 1.5).into()),
+                mesh: meshes.add(base_mesh.into()),
                 material: materials.add(StandardMaterial {
                     base_color: Color::rgb(0.2, 0.7, 0.2),
                     ..default()
@@ -159,12 +173,26 @@ pub fn spawn_player(
             crate::components::ActivePowerUp::default(),
             RigidBody::Dynamic,
             Velocity::zero(),
-            Collider::cuboid(0.5, 0.5, 0.75),
+            Collider::compound(vec![
+                (Vec3::new(0.0, 0.0, 0.0), Quat::IDENTITY, Collider::ball(0.5)),
+                (Vec3::new(0.0, 0.6, 0.0), Quat::IDENTITY, Collider::ball(0.3)),
+            ]),
             LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
             Damping {
-                linear_damping: 0.1,  // Further reduced from 0.5
-                angular_damping: 0.5,  // Further reduced from 1.0
+                linear_damping: 0.1,
+                angular_damping: 0.5,
             },
             CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
-        ));
+        )).with_children(|parent| {
+            // Add head sphere as a child
+            parent.spawn(PbrBundle {
+                mesh: meshes.add(head_mesh.into()),
+                material: materials.add(StandardMaterial {
+                    base_color: Color::rgb(0.2, 0.7, 0.2),
+                    ..default()
+                }),
+                transform: head_transform,
+                ..default()
+            });
+        });
 }
