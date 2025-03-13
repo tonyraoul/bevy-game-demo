@@ -3,6 +3,7 @@ mod systems;
 mod plugins;
 mod styles;
 mod states;
+mod resources;
 
 use bevy::{
     prelude::*,
@@ -24,4 +25,4 @@ fn main() {
         }))
         .add_plugins((MenuPlugin, GamePlugin, SettingsPlugin))
         .run();
-} 
+}
