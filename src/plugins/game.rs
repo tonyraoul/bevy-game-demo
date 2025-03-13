@@ -137,7 +137,7 @@ fn setup_game(
     });
 
     // Platform
-    let platform_radius = 10.0;
+    let platform_radius = 15.0;
     let platform_height = 1.0;
     commands.spawn((
         PbrBundle {
@@ -154,7 +154,7 @@ fn setup_game(
             ..default()
         },
         RigidBody::Fixed,
-        Collider::cylinder(platform_height / 2.0, platform_radius),
+            Collider::cylinder(platform_height / 2.0, platform_radius),
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
 
@@ -174,7 +174,7 @@ fn setup_game(
             ..default()
         },
         RigidBody::Fixed,
-        Collider::cylinder(0.1, platform_radius + 0.1),
+            Collider::cylinder(0.1, platform_radius + 0.1),
         CollisionGroups::new(Group::GROUP_1, Group::GROUP_1 | Group::GROUP_2),
     ));
 }
