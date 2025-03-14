@@ -7,8 +7,8 @@ pub mod enemy;
 pub mod boost;
 pub mod score;
 pub mod powerup;
-pub mod bear_model;
-pub use bear_model::*;
+pub mod duck_model;
+pub use duck_model::*;
 
 pub use menu::*;
 pub use player::*;

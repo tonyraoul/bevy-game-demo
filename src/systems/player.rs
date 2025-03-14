@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore, CompoundSphereParams, spawn_compound_sphere};
+use crate::components::{Player, EnergyBoost, PLATFORM_HEIGHT, BearScore, DuckParams, spawn_duck};
 use crate::states::GameState;
 
 const FALL_THRESHOLD: f32 = -5.0;
@@ -143,19 +143,20 @@ pub fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let params = CompoundSphereParams {
-        base_radius: 0.5,
+    let params = DuckParams {
+        body_radius: 0.5,
         head_radius: 0.3,
-        ear_radius: 0.15,
+        bill_length: 0.4,
+        body_offset: Vec3::new(0.0, 0.0, 0.0),
         head_offset: Vec3::new(0.0, 0.6, 0.0),
-        left_ear_offset: Vec3::new(-0.2, 0.2, 0.0),
-        right_ear_offset: Vec3::new(0.2, 0.2, 0.0),
+        bill_offset: Vec3::new(0.2, 0.0, 0.0),
         base_color: Color::rgb(0.2, 0.7, 0.2),
+        bill_color: Color::rgb(0.8, 0.6, 0.0),
         position: SPAWN_POSITION,
         is_player: true,
     };
 
-    let entity = spawn_compound_sphere(
+    let entity = spawn_duck(
         &mut commands,
         &mut meshes,
         &mut materials,

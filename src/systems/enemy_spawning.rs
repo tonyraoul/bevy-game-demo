@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::{RigidBody, Velocity, Collider, LockedAxes, Damping, CollisionGroups, Group};
 use rand::Rng;
 
-use crate::components::{Enemy, EnemyState, EnergyBoost, PLATFORM_HEIGHT, BearScore, CompoundSphereParams, spawn_compound_sphere};
+use crate::components::{Enemy, EnemyState, EnergyBoost, PLATFORM_HEIGHT, BearScore, DuckParams, spawn_duck};
 
 const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (-8.0, -8.0),
@@ -24,18 +24,19 @@ pub fn spawn_enemies(
         enemy.health = health;
         enemy.state = EnemyState::Chase;
 
-        let enemy_entity = spawn_compound_sphere(
+        let enemy_entity = spawn_duck(
             &mut commands,
             &mut meshes,
             &mut materials,
-            CompoundSphereParams {
-                base_radius: 0.5,
+            DuckParams {
+                body_radius: 0.5,
                 head_radius: 0.4,
-                ear_radius: 0.15,
+                bill_length: 0.4,
+                body_offset: Vec3::new(0.0, 0.0, 0.0),
                 head_offset: Vec3::new(0.0, 0.7, 0.0),
-                left_ear_offset: Vec3::new(-0.25, 0.3, 0.0),
-                right_ear_offset: Vec3::new(0.25, 0.3, 0.0),
+                bill_offset: Vec3::new(0.2, 0.0, 0.0),
                 base_color: Color::rgb(0.8, 0.2, 0.2),
+                bill_color: Color::rgb(0.8, 0.6, 0.0),
                 position: Vec3::new(*x, PLATFORM_HEIGHT + 2.0, *z),
                 is_player: false,
             },
