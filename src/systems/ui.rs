@@ -5,7 +5,7 @@ use crate::components::{
     ScoreText, 
     BoostIndicator, 
     BoostText, 
-    BearScore
+    DuckScore
 };
 
 pub fn spawn_hud(mut commands: Commands) {
@@ -111,15 +111,15 @@ pub fn spawn_hud(mut commands: Commands) {
 
 pub fn update_score_text(
     mut text_query: Query<&mut Text, With<ScoreText>>,
-    score_query: Query<(&BearScore, &Transform)>,
+    score_query: Query<(&DuckScore, &Transform)>,
 ) {
     for mut text in text_query.iter_mut() {
         let mut scores = score_query
             .iter()
             .map(|(score, transform)| (score.name.clone(), score.value, transform.translation.y))
-            .collect::<Vec<_>>();
+        .collect::<Vec<_>>();
         
-        // Sort by score value (descending) and filter out fallen bears
+        // Sort by score value (descending) and filter out fallen ducks
         scores.sort_by(|a, b| b.1.cmp(&a.1));
         scores.retain(|(_name, _score, y)| *y > -5.0);
 

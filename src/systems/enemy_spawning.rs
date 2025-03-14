@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::{RigidBody, Velocity, Collider, LockedAxes, Damping, CollisionGroups, Group};
 use rand::Rng;
 
-use crate::components::{Enemy, EnemyState, EnergyBoost, PLATFORM_HEIGHT, BearScore, DuckParams, spawn_duck};
+use crate::components::{Enemy, EnemyState, EnergyBoost, PLATFORM_HEIGHT, DuckScore, DuckParams, spawn_duck};
 
 const SPAWN_POSITIONS: [(f32, f32); 4] = [
     (-8.0, -8.0),
@@ -43,9 +43,9 @@ pub fn spawn_enemies(
         );
 
         commands.entity(enemy_entity).insert((
-            enemy,
-            BearScore::new(format!("Enemy {}", i + 1)),
-            EnergyBoost::default(),
-        ));
+                    enemy,
+                    DuckScore::new(format!("Enemy {}", i + 1)),
+                    EnergyBoost::default(),
+                ));
     }
 }

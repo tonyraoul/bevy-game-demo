@@ -1,18 +1,18 @@
 ### Disclaimer
 This repository is AI generated using claude 3.5 - haiku model.
 
-# Bevy Bear Balance
+# Bevy Duck Balance
 
-A charming 3D platformer game built with the Bevy game engine and Rust, where you control a cute 4-legged bear trying to maintain balance on a floating platform while competing with other bears.
+A charming 3D platformer game built with the Bevy game engine and Rust, where you control a cute 4-legged duck trying to maintain balance on a floating platform while competing with other ducks.
 
 ## Game Description
 
-In Bevy Bear Balance, you take control of an adorable 4-legged bear who must carefully navigate a suspended platform. But you're not alone! Other bears are also fighting for territory on the platform. The goal is simple: stay on the platform as long as possible while avoiding being pushed off by rival bears. Each time your bear falls off, you lose a precious point from your initial score of 10.
+In Bevy Duck Balance, you take control of an adorable 4-legged duck who must carefully navigate a suspended platform. But you're not alone! Other ducks are also fighting for territory on the platform. The goal is simple: stay on the platform as long as possible while avoiding being pushed off by rival ducks. Each time your duck falls off, you lose a precious point from your initial score of 10.
 
 ## Development Roadmap
 
 ### Core Mechanics [Priority 1]
-- [ ] Create 3D bear model and animations
+- [ ] Create 3D duck model and animations
   - [ ] Idle animation
   - [ ] Walking animation
   - [ ] Pushing animation
@@ -35,7 +35,7 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
   - [x] Add visual indicator
 
 ### Enemy System [Priority 2]
-- [x] Create enemy bear AI
+- [x] Create enemy duck AI
   - [x] Implement pathfinding
   - [x] Add target selection logic
   - [x] Create behavior states (patrol, chase, fight)
@@ -112,7 +112,7 @@ In Bevy Bear Balance, you take control of an adorable 4-legged bear who must car
 - **Dynamic Platform**: Large floating platform with glowing edges for better visibility
 - **Respawn System**: Automatic respawn when falling off the platform
 - **Game HUD**: Real-time score display in the top-left corner and energy boost indicator
-- **Enemy AI**: Bears that patrol the platform and chase the player
+- **Enemy AI**: Ducks that patrol the platform and chase the player
   - Enemies spawn at platform corners
   - Dynamic state system (patrol/chase)
   - Physics-based movement and collisions
@@ -186,4 +186,4 @@ Then open your browser and navigate to `http://localhost:8000`
 - **D**: Move right
 - **SPACE**: Activate energy boost
 
-The character will automatically rotate to face the direction of movement. Physics affects the movement, providing a sense of momentum and weight. 
+The character will automatically rotate to face the direction of movement. Physics affects the movement, providing a sense of momentum and weight.

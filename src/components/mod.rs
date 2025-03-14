@@ -7,6 +7,10 @@ pub mod enemy;
 pub mod boost;
 pub mod score;
 pub mod powerup;
+
+pub mod duck_score;
+pub use duck_score::*;
+
 pub mod duck_model;
 pub use duck_model::*;
 
