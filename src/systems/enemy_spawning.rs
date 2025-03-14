@@ -4,11 +4,13 @@ use rand::Rng;
 
 use crate::components::{Enemy, EnemyState, EnergyBoost, PLATFORM_HEIGHT, DuckScore, DuckParams, spawn_duck};
 
-const SPAWN_POSITIONS: [(f32, f32); 4] = [
+const SPAWN_POSITIONS: [(f32, f32); 6] = [
     (-8.0, -8.0),
     (-8.0, 8.0),
     (8.0, -8.0),
     (8.0, 8.0),
+    (0.0, -8.0),
+    (0.0, 8.0),
 ];
 
 pub fn spawn_enemies(
@@ -19,7 +21,7 @@ pub fn spawn_enemies(
     let mut rng = rand::thread_rng();
     // Spawn initial enemies at corners
     for (i, (x, z)) in SPAWN_POSITIONS.iter().enumerate() {
-        let health = rng.gen_range(50.0..100.0); // Random health between 50 and 100
+        let health = rng.gen_range(75.0..150.0); // Increased health range for tougher enemies
         let mut enemy = Enemy::new();
         enemy.health = health;
         enemy.state = EnemyState::Chase;

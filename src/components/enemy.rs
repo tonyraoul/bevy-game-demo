@@ -30,12 +30,12 @@ impl Enemy {
         Self {
             state: EnemyState::Patrol,
             target_position: None,
-            state_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+            state_timer: Timer::from_seconds(1.5, TimerMode::Repeating), // Faster state transitions
             is_fallen: false,
-            respawn_timer: Timer::from_seconds(3.0, TimerMode::Once),
+            respawn_timer: Timer::from_seconds(2.0, TimerMode::Once), // Faster respawn
             health: 100.0,
             target: None,
-            target_timer: Timer::from_seconds(2.0, TimerMode::Repeating), // Initialize with a default value
+            target_timer: Timer::from_seconds(1.0, TimerMode::Repeating), // More frequent targeting // Initialize with a default value
         }
     }
 

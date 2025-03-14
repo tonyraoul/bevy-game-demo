@@ -5,9 +5,9 @@ use rand::Rng;
 use crate::components::{Enemy, EnemyState, Player, EnergyBoost};
 
 // Physics constants
-const BASE_MOVEMENT_FORCE: f32 = 18.0;
-const MAX_SPEED: f32 = 7.0;
-const FRICTION: f32 = 0.95;
+const BASE_MOVEMENT_FORCE: f32 = 25.0; // Reduced base force since it's now additive
+const MAX_SPEED: f32 = 12.0; // Keep the same max speed
+const FRICTION: f32 = 0.97; // Increased friction to better control the additive force
 
 pub fn enemy_behavior(
     mut enemy_query: Query<(Entity, (&mut Enemy, &Transform, &mut Velocity, &EnergyBoost))>,
@@ -35,7 +35,7 @@ pub fn enemy_behavior(
         if enemy.state_timer.just_finished() {
             enemy.state = match enemy.state {
                 EnemyState::Patrol => {
-                    if rng.gen_bool(0.7) {
+                    if rng.gen_bool(0.95) { // Further increased chance to chase
                         EnemyState::Chase
                     } else {
                         enemy.target_position = Some(Enemy::get_random_platform_position());
@@ -43,7 +43,7 @@ pub fn enemy_behavior(
                     }
                 }
                 EnemyState::Chase => {
-                    if rng.gen_bool(0.4) {
+                    if rng.gen_bool(0.15) { // Further reduced chance to stop chasing
                         enemy.target = None; // Clear target when switching to patrol
                         enemy.target_position = Some(Enemy::get_random_platform_position());
                         EnemyState::Patrol
@@ -95,7 +95,8 @@ pub fn enemy_behavior(
             if let Some(target_pos) = target_pos {
                 // Basic movement towards the target (no prediction or weakness check)
                 let base_direction = (target_pos - transform.translation).normalize();
-                let force = BASE_MOVEMENT_FORCE; // Use a basic force
+                let force = BASE_MOVEMENT_FORCE;
+                // Apply force additively without resetting velocity
                 velocity.linvel += base_direction * force * time.delta_seconds();
                 velocity.linvel *= FRICTION;
                 let speed = velocity.linvel.length();
@@ -110,6 +111,7 @@ pub fn enemy_behavior(
             if let Some(target_pos) = enemy.target_position {
                 let base_direction = (target_pos - transform.translation).normalize();
                 let force = BASE_MOVEMENT_FORCE;
+                // Apply force additively without resetting velocity
                 velocity.linvel += base_direction * force * time.delta_seconds();
                 velocity.linvel *= FRICTION;
                 let speed = velocity.linvel.length();
